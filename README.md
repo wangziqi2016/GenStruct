@@ -16,7 +16,7 @@ project I started. I will also keep this repo constantly updated as soon as I re
 
 ## Directory Structure
 
-This repo is only loosely organized. Each directory under src/ds/ is an independent data structure implementation.
+This repo is only loosely organized. Each directory under src/ is an independent data structure implementation.
 Each sub-directory also has their own README files for detailed information on the usage and interface. 
 I will strive to keep the source file organization as uniform as possible. In most cases, the sub-directory will
 have the following files:
