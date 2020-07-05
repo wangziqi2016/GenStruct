@@ -24,6 +24,9 @@ void test_dbg_printf() {
 }
 
 int main() {
+  printf("========== main ==========\n");
   test_sysexpect();
   test_dbg_printf();
+  printf("==========================\n");
+  return 0;
 }
