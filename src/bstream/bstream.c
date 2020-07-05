@@ -34,4 +34,8 @@ bstream_t *bstream_init_copy(void *data, int size) {
   return bstream;
 }
 
-void bstream_free(bstream_t *bstream);
+void bstream_free(bstream_t *bstream) {
+  if(bstream->owner == 1) free(bstream->data);
+  free(bstream);
+  return;
+}
