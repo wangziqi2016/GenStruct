@@ -79,6 +79,8 @@ void bstream_plan(bstream_t *bstream, int bits, int *head_bits, int *mid_bytes, 
   bits -= head_bits;
   *mid_bytes = bits / 8;
   *tail_bits = bits % 8;
+  assert(*head_bits < 8 && *tail_bits < 8);
+  assert(bits == (*head_bits + *tail_bits + *mid_bytes * 8));
   return;
 }
 
@@ -95,17 +97,27 @@ int bstream_write(bstream_t *bstream, void *p, int bits) {
   const int ret = bits; // Save for return value
   int head_bits, mid_bytes, tail_bits;
   bstream_plan(bstream, bits, &head_bits, &mid_bytes, &tail_bits);
-  while(bits >= 64) {
-    uint64_t *input = (uint64_t *)p;
-    uint64_t t = *input;
-    bstream->data[bstream->byte_pos] |= (t & )
-    t >>= head_bits;
-    head_bits = 0;
-    bits -= 64;
-  }
+  // Optimization: If aligned then we do a fast memcpy of mid_bytes
   uint8_t *input = (uint8_t *)p;
-  if(head_bits != 0) {
-    uint8_t byte = p[0];
+  if(head_bits == 0) {
+    assert(bstream->bit_pos == 0);
+    memcpy(bstream->data + bstream->byte_pos, input, mid_bytes);
+    bstream->byte_pos += mid_bytes;
+    input += mid_bytes
+    // Finally add tail bits
+    bstream->data[bstream->byte_pos] &= (~LOW_1_MASK_64(tail_bits)); // Clear lower bits 
+    bstream->data[bstream->byte_pos] |= (*input & LOW_1_MASK_64(tail_bits)); // Add input bits
+    return ret;
   }
+  
+  while(bits > 0) {
+    uint8_t t = *input;
+    if(head_bits != 0) {
+      bstream->data[bstream->byte_pos] |= (((uint8_t)(t & LOW_1_MASK_64(head_bits))) << (8 - head_bits));
+      t >>= head_bits;
+      head_bits = 0;
+    }
+  }
+  bits -= 64;
   return ret;
 }
