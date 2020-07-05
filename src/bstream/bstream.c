@@ -19,7 +19,7 @@ bstream_t *bstream_init_from(void *data, int size) {
   if(bstream->data != NULL) {
     free(bstream->data);
   }
-  bstream->data = data;
+  bstream->data = (uint8_t *)data;
   bstream->size = size;
   bstream->owner = 0;
   return bstream;
@@ -80,4 +80,28 @@ void bstream_plan(bstream_t *bstream, int bits, int *head_bits, int *mid_bytes, 
   *mid_bytes = bits / 8;
   *tail_bits = bits % 8;
   return;
+}
+
+// Returns actual number of bits written; Report error if write beyond EOS and the write error flag is on
+int bstream_write(bstream_t *bstream, void *p, int bits) {
+  int rem = bstream_get_rem(bstream);
+  if(rem < bits) {
+    if(bstream->write_eos_error == 0) {
+      bits = rem;
+    } else {
+      error_exit("Bits remaining (%d) smaller than write amount (%d)\n", rem, bits);
+    }
+  }
+  const int ret = bits; // Save for return value
+  int head_bits, mid_bytes, tail_bits;
+  bstream_plan(bstream, bits, &head_bits, &mid_bytes, &tail_bits);
+  while(bits >= 64) {
+    uint64_t *input = (uint864_t *)p;
+    
+  }
+  uint8_t *input = (uint8_t *)p;
+  if(head_bits != 0) {
+    uint8_t byte = p[0];
+  }
+  return ret;
 }
