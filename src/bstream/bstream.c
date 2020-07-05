@@ -84,12 +84,16 @@ void bstream_plan(bstream_t *bstream, int bits, int *head_bits, int *mid_bytes, 
   return;
 }
 
-// Fill higher bits
+// Fill higher bits of the current bstream byte, and return the remaining bits of value (shifted)
+// Will adjust  pos
 inline static void bstream_fill_high(bstream_t *bstream, uint8_t value) {
-  assert(bstream->bit_offset >= 0 && bstream->bit_offset < 8);
-  bstream->data[bstream->byte_pos] &= MASK8_LOW_1(bstream->bit_offset); // Preserve lower bits and mask off higher bits
-  bstream->data[bstream->byte_pos] |= (value << bstream->bit_offset); // Combine lower bits of value to higher bits
-  return;
+  assert(bstream->bit_pos >= 0 && bstream->bit_pos < 8);
+  bstream->data[bstream->byte_pos] &= MASK8_LOW_1(bstream->bit_pos); // Preserve lower bits and mask off higher bits
+  bstream->data[bstream->byte_pos] |= (value << bstream->bit_pos); // Combine lower bits of value to higher bits
+  value >>= (8 - bstream->bit_pos);
+  bstream->bit_pos = 0;
+  bstream->byte_pos++;
+  return value;
 }
 
 // Returns actual number of bits written; Report error if write beyond EOS and the write error flag is on
