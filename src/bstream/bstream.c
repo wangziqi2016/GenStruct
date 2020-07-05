@@ -84,6 +84,14 @@ void bstream_plan(bstream_t *bstream, int bits, int *head_bits, int *mid_bytes, 
   return;
 }
 
+// Fill higher bits
+inline static void bstream_fill_high(bstream_t *bstream, uint8_t value) {
+  assert(bstream->bit_offset >= 0 && bstream->bit_offset < 8);
+  bstream->data[bstream->byte_pos] &= MASK8_LOW_1(bstream->bit_offset); // Preserve lower bits and mask off higher bits
+  bstream->data[bstream->byte_pos] |= (value << bstream->bit_offset); // Combine lower bits of value to higher bits
+  return;
+}
+
 // Returns actual number of bits written; Report error if write beyond EOS and the write error flag is on
 int bstream_write(bstream_t *bstream, void *p, int bits) {
   int rem = bstream_get_rem(bstream);
@@ -105,19 +113,16 @@ int bstream_write(bstream_t *bstream, void *p, int bits) {
     bstream->byte_pos += mid_bytes;
     input += mid_bytes
     // Finally add tail bits
-    bstream->data[bstream->byte_pos] &= (~LOW_1_MASK_64(tail_bits)); // Clear lower bits 
-    bstream->data[bstream->byte_pos] |= (*input & LOW_1_MASK_64(tail_bits)); // Add input bits
+    bstream->data[bstream->byte_pos] &= MASK64_LOW_0(tail_bits); // Clear lower bits 
+    bstream->data[bstream->byte_pos] |= (*input & MASK64_LOW_1(tail_bits)); // Add input bits
     return ret;
   }
-  
-  while(bits > 0) {
+  // In the general case we copy 8 bits from input
+  while(bits >= 8) {
     uint8_t t = *input;
-    if(head_bits != 0) {
-      bstream->data[bstream->byte_pos] |= (((uint8_t)(t & LOW_1_MASK_64(head_bits))) << (8 - head_bits));
-      t >>= head_bits;
-      head_bits = 0;
-    }
+    
+    bstream->byte_pos++;
+    bits -= 8;
   }
-  bits -= 64;
   return ret;
 }
