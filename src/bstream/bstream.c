@@ -55,3 +55,14 @@ void bstream_realloc(bstream_t *bstream, int size) {
   if(bstream->owner == 0) bstream->owner = 1;
   return;
 }
+
+void bstream_set_read_eos_error(bstream_t *bstream, int value) {
+  if(value != 0 && value != 1) error_exit("readd_eos_error can only be 0 or 1 (see %d)\n", value);
+  bstream->read_eos_error = value;
+  return;
+}
+void bstream_set_write_eos_error(bstream_t *bstream, int value) {
+  if(value != 0 && value != 1) error_exit("readd_eos_error can only be 0 or 1 (see %d)\n", value);
+  bstream->write_eos_error = value;
+  return;
+}
