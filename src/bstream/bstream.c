@@ -39,3 +39,19 @@ void bstream_free(bstream_t *bstream) {
   free(bstream);
   return;
 }
+
+// If the bstream has ownership then simply does a realloc; If not owner then will become owner by copying the content
+// Data will be truncated if shirinking, or filled with random pattern if expanding
+void bstream_realloc(bstream_t *bstream, int size) {
+  if(size <= 0) error_exit("Invalid size argument: %d\n", size);
+  uint8_t *new_data = (uint8_t *)malloc(size);
+  SYSEXPECT(new_data != NULL);
+  int copy_size = size < bstream->size ? size : bstream->size;
+  memcpy(new_data, bstream->data, copy_size);
+  free(bstream->data);
+  bstream->data = new_data;
+  bstream->size = size;
+  // Always owner after this function
+  if(bstream->owner == 0) bstream->owner = 1;
+  return;
+}

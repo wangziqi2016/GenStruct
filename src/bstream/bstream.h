@@ -23,4 +23,6 @@ bstream_t *bstream_init_from(void *data, int size); // Ownership always transfer
 bstream_t *bstream_init_copy(void *data, int size); // Ownership transferred by copying
 void bstream_free(bstream_t *bstream);
 
+void bstream_realloc(bstream_t *bstream, int size); // Change the size of data array, can expend or shrink
+
 #endif
