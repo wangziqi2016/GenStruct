@@ -13,8 +13,10 @@ void test_dbg_printf() {
   TEST_BEGIN();
   // Make sure we can always see a prompt, with the status of the NDEBUG flag
 #ifdef NDEBUG
+  // This should not trigger an assert
+  assert(0);
 #undef NDEBUG
-  dbg_printf("Debug print - NDEBUG enabled\n");
+  printf("Debug print - NDEBUG enabled\n");
 #define NDEBUG
 #else 
   dbg_printf("Debug print - NDEBUG disabled\n");
