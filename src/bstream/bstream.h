@@ -36,4 +36,6 @@ inline static int bstream_get_pos(bstream_t *bstream) { return bstream->byte_pos
 inline static int bstream_get_eos_pos(bstream_t *bstream) { return bstream->size * 8; }
 inline static int bstream_get_rem(bstream_t *bstream) { return bstream_get_eos_pos(bstream) - bstream_get_pos(bstream); }
 
+void bstream_plan(bstream_t *bstream, int bits, int *head_bits, int *mid_bytes, int *tail_bits);
+
 #endif

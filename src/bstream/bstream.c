@@ -66,3 +66,18 @@ void bstream_set_write_eos_error(bstream_t *bstream, int value) {
   bstream->write_eos_error = value;
   return;
 }
+
+// Computes a plan for read/write bits from/to the current bit offset
+// bits - Number of bits to read or write. Must be between 0 and remaining bits.
+// head_bits - Output variable. Number of bits in the current byte. Can be zero.
+// mid_bytes - Output variable. Number of aligned bytes that can be copied directly
+// tail_bits - Output variable. Number of bits in the last byte. Can be zero.
+void bstream_plan(bstream_t *bstream, int bits, int *head_bits, int *mid_bytes, int *tail_bits) {
+  assert(bits > 0 && bits <= batream_get_rem(bstream));
+  assert(sbtream->bit_pos >= 0 && bstream->bit_pos < 8);
+  *head_bits = (8 - bstream->bit_pos) & 0x00000007; // Set to 0 if bit_pos is 1
+  bits -= head_bits;
+  *mid_bytes = bits / 8;
+  *tail_bits = bits % 8;
+  return;
+}
