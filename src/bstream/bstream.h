@@ -13,8 +13,8 @@ typedef struct {
   int owner;             // Whether the object owns the buffer
   int size;              // Number of bytes in the data buffer
   // Shared for reads and writes
-  int bit_offset;        // Bit offset
-  int byte_offset;       // Byte offset
+  int bit_pos;        // Bit offset
+  int byte_pos;       // Byte offset
   // Control flags
   int read_eos_error;    // Report error if read past EOS (default truncate)
   int write_eos_error;   // Report error if write past EOS (default auto-expand)
@@ -30,5 +30,10 @@ void bstream_realloc(bstream_t *bstream, int size); // Change the size of data a
 // Setting control variables
 void bstream_set_read_eos_error(bstream_t *bstream, int value);  // Only 0/1
 void bstream_set_write_eos_error(bstream_t *bstream, int value); // Only 0/1
+
+// Returns number of bits
+inline static int bstream_get_pos(bstream_t *bstream) { return bstream->byte_pos * 8 + bstream->bit_pos; }
+inline static int bstream_get_eos_pos(bstream_t *bstream) { return bstream->size * 8; }
+inline static int bstream_get_rem(bstream_t *bstream) { return bstream_get_eos_pos(bstream) - bstream_get_pos(bstream); }
 
 #endif
