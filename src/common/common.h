@@ -15,6 +15,11 @@
 #define dbg_printf(fmt, ...) do {} while(0);
 #endif
 
+// Bit masks
+#define LOW_1_MASK_64(num) ((1UL << num) - 1)
+#define HIGH_1_MASK_64(num) (~(LOW_1_MASK_64(64 - num)))
+//#define MID_1_MASK_64(begin, end) (~(LOW_1_MASK_64(begin) ^ HIGH_1_MASK_64(end))) // Needs testing
+
 // Testing function print name and pass
 #define TEST_BEGIN() do { printf("========== %s ==========\n", __func__); } while(0);
 #define TEST_PASS() do { printf("Pass!\n"); } while(0);

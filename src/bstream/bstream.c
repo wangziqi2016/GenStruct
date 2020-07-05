@@ -96,8 +96,12 @@ int bstream_write(bstream_t *bstream, void *p, int bits) {
   int head_bits, mid_bytes, tail_bits;
   bstream_plan(bstream, bits, &head_bits, &mid_bytes, &tail_bits);
   while(bits >= 64) {
-    uint64_t *input = (uint864_t *)p;
-    
+    uint64_t *input = (uint64_t *)p;
+    uint64_t t = *input;
+    bstream->data[bstream->byte_pos] |= (t & )
+    t >>= head_bits;
+    head_bits = 0;
+    bits -= 64;
   }
   uint8_t *input = (uint8_t *)p;
   if(head_bits != 0) {
