@@ -3,6 +3,7 @@
 #define _BSTREAM_H
 
 #include <stdint.h>
+#include <string.h>
 #include "common.h"
 
 #define BSTREAM_INIT_SIZE 256
@@ -16,7 +17,7 @@ typedef struct {
   int byte_offset;       // Byte offset
 } bstream_t;
 
-bsteram_t *bstream_init();              // Initialize with default size
+bstream_t *bstream_init();              // Initialize with default size
 bstream_t *bstream_init_size(int size); // Initialize with given size
 bstream_t *bstream_init_from(void *data, int size); // Ownership always transferred without copying
 bstream_t *bstream_init_copy(void *data, int size); // Ownership transferred by copying
