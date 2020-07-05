@@ -26,7 +26,10 @@ bstream_t *bstream_init_from(void *data, int size) {
 }
 
 bstream_t *bstream_init_copy(void *data, int size) {
-
+  void *p = malloc(size);
+  SYSEXPECT(p != NULL);
+  memcpy(p, data, size);
+  bstream_t *bstream = bstream_init_from(p, size);
   bstream->owner = 1;
   return bstream;
 }
