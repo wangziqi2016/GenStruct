@@ -16,13 +16,15 @@
 #endif
 
 // Bit masks
-#define MASK64_LOW_1(num) ((1UL << num) - 1)
+#define MASK64_LOW_1(num)  ((1UL << num) - 1)
 #define MASK64_HIGH_1(num) (~(MASK64_LOW_1(64 - num)))
-#define MASK8_LOW_1(num) ((uint8_t)((1 << num) - 1))
-#define MASK8_HIGH_1(num) ((uint8_t)(~(MASK8_LOW_1(8 - num))))
+#define MASK64_LOW_0(num)  (~MASK64_LOW_1(num))
+#define MASK64_HIGH_0(num) (~MASK64_HIGH_1(num))
 
-#define LOW_1_MASK_64(num) ((1UL << num) - 1)
-#define HIGH_1_MASK_64(num) (~(LOW_1_MASK_64(64 - num)))
+#define MASK8_LOW_1(num)  ((uint8_t)((1 << num) - 1))
+#define MASK8_HIGH_1(num) ((uint8_t)(~(MASK8_LOW_1(8 - num))))
+#define MASK8_LOW_0(num)  (~MASK8_LOW_1(num))
+#define MASK8_HIGH_0(num) (~MASK8_HIGH_1(num))
 
 // Testing function print name and pass
 #define TEST_BEGIN() do { printf("========== %s ==========\n", __func__); } while(0);
