@@ -1,5 +1,5 @@
 
-CFLAGS+=
+CFLAGS+=-I../common/common.h
 
 .phony: all test
 

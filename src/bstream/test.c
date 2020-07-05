@@ -1,5 +1,5 @@
 
-#include "stream.h"
+#include "bstream.h"
 
 void test_name() {
   TEST_BEGIN();

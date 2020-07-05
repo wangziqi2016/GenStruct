@@ -1,5 +1,5 @@
 
-#include "error.h"
+#include "common.h"
 
 void test_sysexpect() {
   TEST_BEGIN();
