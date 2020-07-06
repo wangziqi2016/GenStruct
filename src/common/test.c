@@ -25,10 +25,28 @@ void test_dbg_printf() {
   return;
 }
 
+void test_bitsprintf8() {
+  TEST_BEGIN();
+  char buf1[9], buf2[9];
+  bitsprint8_be(buf1, 0x55);
+  bitsprint8_be(buf2, 0xaa);
+  printf("0x55 = \"%s\"; 0xaa = \"%s\"\n", buf1, buf2);
+  assert(STREQ(buf1, "01010101"));
+  assert(STREQ(buf2, "10101010"));
+  bitsprint8_be(buf1, 0xa5);
+  bitsprint8_be(buf2, 0x5a);
+  printf("0xa5 = \"%s\"; 0x5a = \"%s\"\n", buf1, buf2);
+  assert(STREQ(buf1, "10100101"));
+  assert(STREQ(buf2, "01011010"));
+  TEST_PASS();
+  return;
+}
+
 int main() {
   printf("========== main ==========\n");
   test_sysexpect();
   test_dbg_printf();
+  test_bitsprintf8();
   printf("==========================\n");
   return 0;
 }
