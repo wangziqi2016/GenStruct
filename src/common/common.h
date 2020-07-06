@@ -26,6 +26,14 @@
 #define MASK8_LOW_0(num)  (~MASK8_LOW_1(num))
 #define MASK8_HIGH_0(num) (~MASK8_HIGH_1(num))
 
+// Copies bit range in one byte to another byte
+// starts are inclusive; ends are non-inclusive
+inline static bitcpy8(uint8_t *to, uint8_t *from, int to_start, int to_end, int from_start, int from_end) {
+  assert(to_start < to_end && from_start < from_end);
+  assert(to_start >= 0 && to_end <= 8);
+  assert(from_start >= 0 && from_end <= 8);
+}
+
 // Testing function print name and pass
 #define TEST_BEGIN() do { printf("========== %s ==========\n", __func__); } while(0);
 #define TEST_PASS() do { printf("Pass!\n"); } while(0);
