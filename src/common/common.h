@@ -24,6 +24,8 @@
 // From 0 to 8, indexed by the number of bits
 extern uint8_t mask8_low_1[9];  
 extern uint8_t mask8_high_1[9];
+// Single bit masks
+extern uint8_t mask8_1[8];
 
 #define MASK8_LOW_1(num)  (mask8_low_1[num])
 #define MASK8_HIGH_1(num) (mask8_high_1[num])
