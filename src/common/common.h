@@ -37,7 +37,7 @@ extern uint8_t mask8_1[8];
 
 uint8_t bit8_gen(const char *s); // Generates 8 bit values using "1" and "0" string
 // Extracts the bit 
-inline static bit8_test(uint8_t value, int index) { return !!(value & MASK8_1(index)); }
+inline static int bit8_test(uint8_t value, int index) { return !!(value & MASK8_1(index)); }
 
 // Copies bit range in one byte to another byte
 // starts are inclusive; ends are non-inclusive
@@ -52,7 +52,7 @@ inline static void bitcpy8(uint8_t *to, uint8_t *from, int to_start, int from_st
   if(from_start > to_start) from_bits >>= (from_start - to_start);
   else if(from_start < to_start) from_bits <<= (to_start - from_start);
   to_bits |= from_bits;
-  *to |= to_bits;
+  *to = to_bits;
   return;
 }
 
