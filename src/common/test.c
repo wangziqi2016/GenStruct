@@ -61,22 +61,26 @@ void test_bit8_gen() {
 
 void test_bitcpy() {
   TEST_BEGIN();
-  uint8_t from, to;
+  uint8_t from, to, result;
   from = 0x55; to = 0xaa;
   for(int from_start = 0; from_start < 8;from_start++) {
     for(int to_start = 0; to_start < 8;to_start++) {
       for(int bits = 0; bits <= 8; bits++) {
         result = to;
         uint8_t old_from = from;
-        result = bitcpy8(&result, &from, to_start, from_start, bits);
+        bitcpy8(&result, &from, to_start, from_start, bits);
         // Check result
+        char buf1[9], buf2[9], buf3[9];
+        bitsprint8_be(buf1, from); bitsprint8_be(buf2, to); bitsprint8_be(buf3, result);
+        printf("from %s to %s result %s from_start %d to_start %d bits %d\n", 
+          buf1, buf2, buf3, from_start, to_start, bits);
         for(int i = 0;i < 8;i++) {
           if(i < to_start || i >= to_start + bits) {
             // Condition 1: Bits in "to" are still preserved
             assert(bit8_test(result, i) == bit8_test(to, i));
           } else {
             // Condition 2: All bits in "from" are moved to "to"
-            assert(bit8_test(from, from_start + to_start - i) == bit8_test(result, i));
+            assert(bit8_test(from, from_start + i - to_start) == bit8_test(result, i));
           }
         }
         // Accidentally changed from (since we passed pointer)
