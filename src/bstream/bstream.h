@@ -6,6 +6,9 @@
 #include <string.h>
 #include "common.h"
 
+//* bstream_t - Bit stream data structure. 
+//  Note that bstream does not support random access. Only streaming reads or wrires are supported
+
 #define BSTREAM_INIT_SIZE 256
 
 typedef struct {
@@ -26,6 +29,8 @@ bstream_t *bstream_init_from(void *data, int size); // Ownership always transfer
 bstream_t *bstream_init_copy(void *data, int size); // Ownership transferred by copying
 void bstream_free(bstream_t *bstream);
 void bstream_realloc(bstream_t *bstream, int size); // Change the size of data array, can expend or shrink
+
+void bstream_advance(bstream_t *bstream, int bits); // Advance from the current pos by given bits
 
 // Setting control variables
 void bstream_set_read_eos_error(bstream_t *bstream, int value);  // Only 0/1

@@ -56,6 +56,24 @@ void bstream_realloc(bstream_t *bstream, int size) {
   return;
 }
 
+// Report error if advance past end of buffer
+void bstream_advance(bstream_t *bstream, int bits) {
+  if(bits > bstream_get_rem(bstream)) {
+    error_exit("Advance beyond the end of the current buffer (rem %d, bits %d)\n", 
+      bstream_get_rem(bstream), bits);
+  }
+  bstream->byte_pos += (bits / 8);
+  int bits_rem = bits % 8;                      // Number of bits remains to be advanced
+  int byte_rem = bstream_get_byte_rem(bstream); // Number of bits in the current byte
+  if(byte_rem > bits_rem) {
+    bstream->bit_pos += bits_rem; // Easy case: Still within the same byte
+  } else {
+    bstream->byte_pos++;
+    bstream->bit_pos = bits_rem - byte_rem; // Hard case: Advance to next byte
+  }
+  return;
+}
+
 void bstream_set_read_eos_error(bstream_t *bstream, int value) {
   if(value != 0 && value != 1) error_exit("readd_eos_error can only be 0 or 1 (see %d)\n", value);
   bstream->read_eos_error = value;
@@ -132,4 +150,14 @@ int bstream_write(bstream_t *bstream, void *p, int bits) {
     }
   }
   return ret;
+}
+
+// Low-level function. There will not be out-of-range read or write
+// Copy from current pos from src to current pos to dest
+int bstream_copy(bstream_t *dest, bstream_t *src, int bits) {
+  assert(bits <= bstream_get_rem(dest));
+  assert(bits <= bstream_get_rem(src));
+  while(bits != 0) {
+
+  }
 }
