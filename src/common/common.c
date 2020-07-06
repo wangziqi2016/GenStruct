@@ -13,6 +13,22 @@ uint8_t mask8_1[] = {
   0x1, 0x2, 0x4, 0x8, 0x10, 0x20, 0x40, 0x80,
 };
 
+// This function is only used for debugging; Will report error if malformed
+void uint8_t bit8_gen(const char *s) {
+  int len = strlen(s);
+  if(len < 1 || len > 8) error_exit("Invalid bit string length (see %d)\n", len);
+  uint8_t value = 0x00;
+  int shift = len - 1;
+  while(*s) {
+    if(*s != '0' && *s != '1') error_exit("Unexpected char: 0x%02X\n", *s);
+    if(*s  == '1') value |= (0x1 << shift);
+    shift--;
+    s++;
+  }
+  assert(shift == 0);
+  return value;
+}
+
 void bitsprint8(char *buf, uint8_t value, int dir) {
   assert(dir == BITSPRINT_LE || dir == BITSPRINT_BE);
   uint8_t mask = (dir == BITSPRINT_LE) ? 0x01 : 0x80;

@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <error.h>
+#include <stdint.h>
 
 // Error reporting and system call assertion
 #define SYSEXPECT(expr) do { if(!(expr)) { perror(__func__); exit(1); } } while(0)
@@ -31,6 +32,8 @@ extern uint8_t mask8_1[8];
 #define MASK8_HIGH_1(num) (mask8_high_1[num])
 #define MASK8_LOW_0(num)  (~MASK8_LOW_1(num))
 #define MASK8_HIGH_0(num) (~MASK8_HIGH_1(num))
+
+void uint8_t bit8_gen(const char *s); // Generates 8 bit values using "1" and "0" string
 
 // Copies bit range in one byte to another byte
 // starts are inclusive; ends are non-inclusive
