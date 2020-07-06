@@ -73,10 +73,10 @@ void bstream_set_write_eos_error(bstream_t *bstream, int value) {
 // mid_bytes - Output variable. Number of aligned bytes that can be copied directly
 // tail_bits - Output variable. Number of bits in the last byte. Can be zero.
 void bstream_plan(bstream_t *bstream, int bits, int *head_bits, int *mid_bytes, int *tail_bits) {
-  assert(bits > 0 && bits <= batream_get_rem(bstream));
-  assert(sbtream->bit_pos >= 0 && bstream->bit_pos < 8);
+  assert(bits > 0 && bits <= bstream_get_rem(bstream));
+  assert(bstream->bit_pos >= 0 && bstream->bit_pos < 8);
   *head_bits = (8 - bstream->bit_pos) & 0x00000007; // Set to 0 if bit_pos is 1
-  bits -= head_bits;
+  bits -= *head_bits;
   *mid_bytes = bits / 8;
   *tail_bits = bits % 8;
   assert(*head_bits < 8 && *tail_bits < 8);
@@ -103,7 +103,7 @@ int bstream_write(bstream_t *bstream, void *p, int bits) {
     assert(bstream->bit_pos == 0);
     memcpy(bstream->data + bstream->byte_pos, input, mid_bytes);
     bstream->byte_pos += mid_bytes;
-    input += mid_bytes
+    input += mid_bytes;
     // Finally add tail bits
     bitcpy8(bstream->data + bstream->byte_pos, input, 0, 0, tail_bits);
     return ret;
@@ -124,11 +124,11 @@ int bstream_write(bstream_t *bstream, void *p, int bits) {
       bstream->byte_pos++;
       bits -= (8 - bstream->bit_pos);
       bitcpy8(bstream->data + bstream->byte_pos, input, 0, 8 - bstream->bit_pos, bits);
-      btream->bit_pos = bits;
+      bstream->bit_pos = bits;
     } else {
       // Easy case: Just add the remaining "bits" bits without crossing boundary
       bitcpy8(bstream->data + bstream->byte_pos, input, bstream->bit_pos, 0, bits);
-      btream->bit_pos += bits;
+      bstream->bit_pos += bits;
     }
   }
   return ret;
