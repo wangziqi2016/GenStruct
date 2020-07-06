@@ -21,17 +21,26 @@
 #define MASK64_LOW_0(num)  (~MASK64_LOW_1(num))
 #define MASK64_HIGH_0(num) (~MASK64_HIGH_1(num))
 
-#define MASK8_LOW_1(num)  ((uint8_t)((1 << num) - 1))
-#define MASK8_HIGH_1(num) ((uint8_t)(~(MASK8_LOW_1(8 - num))))
+// From 0 to 8, indexed by the number of bits
+extern uint8_t mask8_low_1[9];  
+extern uint8_t mask8_high_1[9];
+
+#define MASK8_LOW_1(num)  (mask8_low_1[num])
+#define MASK8_HIGH_1(num) (mask8_high_1[num])
 #define MASK8_LOW_0(num)  (~MASK8_LOW_1(num))
 #define MASK8_HIGH_0(num) (~MASK8_HIGH_1(num))
 
 // Copies bit range in one byte to another byte
 // starts are inclusive; ends are non-inclusive
-inline static bitcpy8(uint8_t *to, uint8_t *from, int to_start, int to_end, int from_start, int from_end) {
-  assert(to_start < to_end && from_start < from_end);
-  assert(to_start >= 0 && to_end <= 8);
-  assert(from_start >= 0 && from_end <= 8);
+inline static bitcpy8(uint8_t *to, uint8_t *from, int to_start, int from_start, int bits) {
+  assert(bits >= 0 && bits <= 8);
+  assert(to_start >= 0 && to_start + bits <= 8);
+  assert(from_start >= 0 && from_start + bits <= 8);
+  uint8_t from_mask_1 = MASK8_LOW_1(bits) << from_start;
+  uint8_t to_mask_1 = MASK8_LOW_1(bits) << to_start;
+  uint8_t from_bits = *from & from_mask_1;
+  *to &= ~to_mask_1; // Clear bits in the destination
+
 }
 
 // Testing function print name and pass
