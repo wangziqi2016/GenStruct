@@ -14,7 +14,7 @@ uint8_t mask8_1[] = {
 };
 
 // This function is only used for debugging; Will report error if malformed
-void uint8_t bit8_gen(const char *s) {
+uint8_t bit8_gen(const char *s) {
   int len = strlen(s);
   if(len < 1 || len > 8) error_exit("Invalid bit string length (see %d)\n", len);
   uint8_t value = 0x00;
@@ -36,5 +36,6 @@ void bitsprint8(char *buf, uint8_t value, int dir) {
     buf[i] = (value & mask) ? '1' : '0';
     mask = (dir == BITSPRINT_LE) ? mask << 1 : mask >> 1 ;
   }
+  buf[8] = '\0';
   return;
 }

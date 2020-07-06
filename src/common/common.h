@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <error.h>
 #include <stdint.h>
+#include <string.h>
 
 // Error reporting and system call assertion
 #define SYSEXPECT(expr) do { if(!(expr)) { perror(__func__); exit(1); } } while(0)
@@ -33,7 +34,7 @@ extern uint8_t mask8_1[8];
 #define MASK8_LOW_0(num)  (~MASK8_LOW_1(num))
 #define MASK8_HIGH_0(num) (~MASK8_HIGH_1(num))
 
-void uint8_t bit8_gen(const char *s); // Generates 8 bit values using "1" and "0" string
+uint8_t bit8_gen(const char *s); // Generates 8 bit values using "1" and "0" string
 
 // Copies bit range in one byte to another byte
 // starts are inclusive; ends are non-inclusive
@@ -53,11 +54,13 @@ inline static void bitcpy8(uint8_t *to, uint8_t *from, int to_start, int from_st
 }
 
 #define BITSPRINT_BE 0 // Big-endian print, i.e. high bits are printed first
-#define BITSPRINT_LE 0 // Little-endian print, i.e. low bits are printed first
+#define BITSPRINT_LE 1 // Little-endian print, i.e. low bits are printed first
 
 void bitsprint8(char *buf, uint8_t value, int dir); // Print 8 bit value to a buffer in binary form; dir is direction
 inline static void bitsprint8_be(char *buf, uint8_t value) { bitsprint8(buf, value, BITSPRINT_BE); }
 inline static void bitsprint8_le(char *buf, uint8_t value) { bitsprint8(buf, value, BITSPRINT_LE); }
+
+#define STREQ(a, b) (strcmp(a, b) == 0)
 
 // Testing function print name and pass
 #define TEST_BEGIN() do { printf("========== %s ==========\n", __func__); } while(0);
