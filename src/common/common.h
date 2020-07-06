@@ -32,15 +32,19 @@ extern uint8_t mask8_high_1[9];
 
 // Copies bit range in one byte to another byte
 // starts are inclusive; ends are non-inclusive
-inline static bitcpy8(uint8_t *to, uint8_t *from, int to_start, int from_start, int bits) {
+inline static void bitcpy8(uint8_t *to, uint8_t *from, int to_start, int from_start, int bits) {
   assert(bits >= 0 && bits <= 8);
   assert(to_start >= 0 && to_start + bits <= 8);
   assert(from_start >= 0 && from_start + bits <= 8);
   uint8_t from_mask_1 = MASK8_LOW_1(bits) << from_start;
   uint8_t to_mask_1 = MASK8_LOW_1(bits) << to_start;
   uint8_t from_bits = *from & from_mask_1;
-  *to &= ~to_mask_1; // Clear bits in the destination
-
+  uint8_t to_bits = *to & ~to_mask_1;
+  if(from_start > to_start) from_bits >>= (from_start - to_start);
+  else if(from_start < to_start) from_bits <<= (to_start - from_start);
+  to_bits |= from_bits;
+  *to |= to_bits;
+  return;
 }
 
 // Testing function print name and pass
