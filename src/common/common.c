@@ -25,7 +25,7 @@ uint8_t bit8_gen(const char *s) {
     shift--;
     s++;
   }
-  assert(shift == 0);
+  assert(shift == -1);
   return value;
 }
 
