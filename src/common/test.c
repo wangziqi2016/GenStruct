@@ -1,4 +1,5 @@
 
+#include <time.h>
 #include "common.h"
 
 void test_sysexpect() {
@@ -62,18 +63,22 @@ void test_bit8_gen() {
 void test_bitcpy() {
   TEST_BEGIN();
   uint8_t from, to, result;
-  from = 0x55; to = 0xaa;
+  srand(time(NULL));
+  from = rand() ^ rand() ^ rand(); to = rand() ^ rand() ^ rand();
+  printf("From = 0x%02X; to = 0x%02X\n", from, to);
+  int count = 0;
   for(int from_start = 0; from_start < 8;from_start++) {
     for(int to_start = 0; to_start < 8;to_start++) {
-      for(int bits = 0; bits <= 8; bits++) {
+      int max_bits = from_start > to_start ? 8 - from_start : 8 - to_start;
+      for(int bits = 0; bits <= max_bits; bits++) {
         result = to;
         uint8_t old_from = from;
         bitcpy8(&result, &from, to_start, from_start, bits);
         // Check result
-        char buf1[9], buf2[9], buf3[9];
-        bitsprint8_be(buf1, from); bitsprint8_be(buf2, to); bitsprint8_be(buf3, result);
-        printf("from %s to %s result %s from_start %d to_start %d bits %d\n", 
-          buf1, buf2, buf3, from_start, to_start, bits);
+        //char buf1[9], buf2[9], buf3[9];
+        //bitsprint8_be(buf1, from); bitsprint8_be(buf2, to); bitsprint8_be(buf3, result);
+        //printf("from %s to %s result %s from_start %d to_start %d bits %d\n", 
+        //  buf1, buf2, buf3, from_start, to_start, bits);
         for(int i = 0;i < 8;i++) {
           if(i < to_start || i >= to_start + bits) {
             // Condition 1: Bits in "to" are still preserved
@@ -85,9 +90,11 @@ void test_bitcpy() {
         }
         // Accidentally changed from (since we passed pointer)
         assert(from == old_from);
+        count++;
       }
     }
   }
+  printf("Tested all possible %d combinations\n", count);
   TEST_PASS();
   return;
 }
