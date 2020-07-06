@@ -29,12 +29,15 @@ extern uint8_t mask8_high_1[9];
 // Single bit masks
 extern uint8_t mask8_1[8];
 
-#define MASK8_LOW_1(num)  (mask8_low_1[num])
+#define MASK8_1(index)    (mask8_1[index])   // Single bit 1 mask; Index of bit given in arg
+#define MASK8_LOW_1(num)  (mask8_low_1[num]) // All-one mask in lower bits; Number of 1 given in arg
 #define MASK8_HIGH_1(num) (mask8_high_1[num])
 #define MASK8_LOW_0(num)  (~MASK8_LOW_1(num))
 #define MASK8_HIGH_0(num) (~MASK8_HIGH_1(num))
 
 uint8_t bit8_gen(const char *s); // Generates 8 bit values using "1" and "0" string
+// Extracts the bit 
+inline static bit8_test(uint8_t value, int index) { return !!(value & MASK8_1(index)); }
 
 // Copies bit range in one byte to another byte
 // starts are inclusive; ends are non-inclusive
