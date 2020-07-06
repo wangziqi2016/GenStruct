@@ -84,18 +84,6 @@ void bstream_plan(bstream_t *bstream, int bits, int *head_bits, int *mid_bytes, 
   return;
 }
 
-// Fill higher bits of the current bstream byte, and return the remaining bits of value (shifted)
-// Will adjust  pos
-inline static void bstream_fill_high(bstream_t *bstream, uint8_t value) {
-  assert(bstream->bit_pos >= 0 && bstream->bit_pos < 8);
-  bstream->data[bstream->byte_pos] &= MASK8_LOW_1(bstream->bit_pos); // Preserve lower bits and mask off higher bits
-  bstream->data[bstream->byte_pos] |= (value << bstream->bit_pos); // Combine lower bits of value to higher bits
-  value >>= (8 - bstream->bit_pos);
-  bstream->bit_pos = 0;
-  bstream->byte_pos++;
-  return value;
-}
-
 // Returns actual number of bits written; Report error if write beyond EOS and the write error flag is on
 int bstream_write(bstream_t *bstream, void *p, int bits) {
   int rem = bstream_get_rem(bstream);
@@ -117,16 +105,31 @@ int bstream_write(bstream_t *bstream, void *p, int bits) {
     bstream->byte_pos += mid_bytes;
     input += mid_bytes
     // Finally add tail bits
-    bstream->data[bstream->byte_pos] &= MASK64_LOW_0(tail_bits); // Clear lower bits 
-    bstream->data[bstream->byte_pos] |= (*input & MASK64_LOW_1(tail_bits)); // Add input bits
+    bitcpy8(bstream->data + bstream->byte_pos, input, 0, 0, tail_bits);
     return ret;
   }
   // In the general case we copy 8 bits from input
   while(bits >= 8) {
-    uint8_t t = *input;
-    
+    bitcpy8(bstream->data + bstream->byte_pos, input, bstream->bit_pos, 0, 8 - bstream->bit_pos);
     bstream->byte_pos++;
+    bitcpy8(bstream->data + bstream->byte_pos, input, 0, 8 - bstream->bit_pos, bstream->bit_pos);
+    input++;
     bits -= 8;
+  }
+  if(bits != 0) {
+    if(bits >= 8 - bstream->bit_pos) {
+      // Hard case: Cross boundary again
+      bitcpy8(bstream->data + bstream->byte_pos, input, bstream->bit_pos, 0, 8 - bstream->bit_pos);
+      // After this the stream is at bit pos 0, and input is at bit pos (8 - bstream->bit_pos)
+      bstream->byte_pos++;
+      bits -= (8 - bstream->bit_pos);
+      bitcpy8(bstream->data + bstream->byte_pos, input, 0, 8 - bstream->bit_pos, bits);
+      btream->bit_pos = bits;
+    } else {
+      // Easy case: Just add the remaining "bits" bits without crossing boundary
+      bitcpy8(bstream->data + bstream->byte_pos, input, bstream->bit_pos, 0, bits);
+      btream->bit_pos += bits;
+    }
   }
   return ret;
 }
