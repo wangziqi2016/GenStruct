@@ -86,17 +86,6 @@ void bstream_advance(bstream_t *bstream, int bits) {
   return;
 }
 
-void bstream_set_read_eos_error(bstream_t *bstream, int value) {
-  if(value != 0 && value != 1) error_exit("readd_eos_error can only be 0 or 1 (see %d)\n", value);
-  bstream->read_eos_error = value;
-  return;
-}
-void bstream_set_write_eos_error(bstream_t *bstream, int value) {
-  if(value != 0 && value != 1) error_exit("readd_eos_error can only be 0 or 1 (see %d)\n", value);
-  bstream->write_eos_error = value;
-  return;
-}
-
 // Returns actual number of bits written; Report error if write beyond EOS and the write error flag is on
 void bstream_write(bstream_t *bstream, void *p, int bits) {
   // Create a local object as wrapper
