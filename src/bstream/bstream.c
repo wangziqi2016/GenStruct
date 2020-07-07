@@ -87,82 +87,37 @@ void bstream_set_write_eos_error(bstream_t *bstream, int value) {
   return;
 }
 
-// Computes a plan for read/write bits from/to the current bit offset
-// bits - Number of bits to read or write. Must be between 0 and remaining bits.
-// head_bits - Output variable. Number of bits in the current byte. Can be zero.
-// mid_bytes - Output variable. Number of aligned bytes that can be copied directly
-// tail_bits - Output variable. Number of bits in the last byte. Can be zero.
-void bstream_plan(bstream_t *bstream, int bits, int *head_bits, int *mid_bytes, int *tail_bits) {
-  assert(bits > 0 && bits <= bstream_get_rem(bstream));
-  assert(bstream->bit_pos >= 0 && bstream->bit_pos < 8);
-  *head_bits = (8 - bstream->bit_pos) & 0x00000007; // Set to 0 if bit_pos is 1
-  bits -= *head_bits;
-  *mid_bytes = bits / 8;
-  *tail_bits = bits % 8;
-  assert(*head_bits < 8 && *tail_bits < 8);
-  assert(bits == (*head_bits + *tail_bits + *mid_bytes * 8));
-  return;
-}
-
 // Returns actual number of bits written; Report error if write beyond EOS and the write error flag is on
 int bstream_write(bstream_t *bstream, void *p, int bits) {
   int rem = bstream_get_rem(bstream);
   if(rem < bits) {
-    if(bstream->write_eos_error == 0) {
-      bits = rem;
-    } else {
+    //if(bstream->write_eos_error == 0) {
+    //  bits = rem;
+    //} else {
       error_exit("Bits remaining (%d) smaller than write amount (%d)\n", rem, bits);
-    }
+    //}
   }
-  const int ret = bits; // Save for return value
-  int head_bits, mid_bytes, tail_bits;
-  bstream_plan(bstream, bits, &head_bits, &mid_bytes, &tail_bits);
-  // Optimization: If aligned then we do a fast memcpy of mid_bytes
-  uint8_t *input = (uint8_t *)p;
-  if(head_bits == 0) {
-    assert(bstream->bit_pos == 0);
-    memcpy(bstream->data + bstream->byte_pos, input, mid_bytes);
-    bstream->byte_pos += mid_bytes;
-    input += mid_bytes;
-    // Finally add tail bits
-    bitcpy8(bstream->data + bstream->byte_pos, input, 0, 0, tail_bits);
-    return ret;
-  }
-  // In the general case we copy 8 bits from input
-  while(bits >= 8) {
-    bitcpy8(bstream->data + bstream->byte_pos, input, bstream->bit_pos, 0, 8 - bstream->bit_pos);
-    bstream->byte_pos++;
-    bitcpy8(bstream->data + bstream->byte_pos, input, 0, 8 - bstream->bit_pos, bstream->bit_pos);
-    input++;
-    bits -= 8;
-  }
-  if(bits != 0) {
-    if(bits >= 8 - bstream->bit_pos) {
-      // Hard case: Cross boundary again
-      bitcpy8(bstream->data + bstream->byte_pos, input, bstream->bit_pos, 0, 8 - bstream->bit_pos);
-      // After this the stream is at bit pos 0, and input is at bit pos (8 - bstream->bit_pos)
-      bstream->byte_pos++;
-      bits -= (8 - bstream->bit_pos);
-      bitcpy8(bstream->data + bstream->byte_pos, input, 0, 8 - bstream->bit_pos, bits);
-      bstream->bit_pos = bits;
-    } else {
-      // Easy case: Just add the remaining "bits" bits without crossing boundary
-      bitcpy8(bstream->data + bstream->byte_pos, input, bstream->bit_pos, 0, bits);
-      bstream->bit_pos += bits;
-    }
-  }
-  return ret;
+  
 }
 
 // Low-level function. There will not be out-of-range read or write
-// Copy from current pos from src to current pos to dest
-int bstream_copy(bstream_t *dest, bstream_t *src, int bits) {
+// Copy from current pos from src to current pos to dest; Guaranteed copy "bits" bits
+// This function will move dest and src pointers
+void bstream_copy(bstream_t *dest, bstream_t *src, int bits) {
   assert(bits <= bstream_get_rem(dest));
   assert(bits <= bstream_get_rem(src));
   while(bits != 0) {
-
+    int dest_rem = bstream_get_byte_rem(dest);
+    int src_rem = bstream_get_byte_rem(dest);
+    int copy_bits = (dest_rem < src_rem) ? dest_rem : src_rem;
+    if(copy_bits > bits) copy_bits = bits;
+    bitcpy8(dest->data + dest->byte_pos, src->data + src->byte_pos, dest->bit_pos, src->bit_pos, copy_bits);
+    bstream_advance(dest, copy_bits);
+    bstream_advance(src, copy_bits);
+    bits -= copy_bits;
+    assert(bits >= 0);
   }
-  return 0;
+  return;
 }
 
 void bstream_print(bstream_t *bstream) {
