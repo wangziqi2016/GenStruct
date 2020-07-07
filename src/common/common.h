@@ -18,6 +18,7 @@
 #endif
 
 // Bit masks
+#define MASK64_1(index)    (0x1UL << index)
 #define MASK64_LOW_1(num)  ((1UL << num) - 1)
 #define MASK64_HIGH_1(num) (~(MASK64_LOW_1(64 - num)))
 #define MASK64_LOW_0(num)  (~MASK64_LOW_1(num))
@@ -35,9 +36,11 @@ extern uint8_t mask8_1[8];
 #define MASK8_LOW_0(num)  (~MASK8_LOW_1(num))
 #define MASK8_HIGH_0(num) (~MASK8_HIGH_1(num))
 
-uint8_t bit8_gen(const char *s); // Generates 8 bit values using "1" and "0" string
 // Extracts the bit 
+inline static int bit64_test(uint64_t value, int index) { return !!(value & MASK64_1(index)); }
 inline static int bit8_test(uint8_t value, int index) { return !!(value & MASK8_1(index)); }
+
+uint8_t bit8_gen(const char *s); // Generates 8 bit values using "1" and "0" string
 
 // Copies bit range in one byte to another byte
 // starts are inclusive; ends are non-inclusive
