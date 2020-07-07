@@ -18,6 +18,7 @@ typedef void (*bstream_rw_cb_t)(struct bstream_struct_t *bstream);
 typedef struct bstream_struct_t {
   uint8_t *data;         // Buffer data
   int owner;             // Whether the object owns the buffer
+  int local;             // Set if local; We could not free local
   int size;              // Number of bytes in the data buffer
   // Shared for reads and writes
   int bit_pos;        // Bit offset
@@ -31,6 +32,7 @@ bstream_t *bstream_init();              // Initialize with default size
 bstream_t *bstream_init_size(int size); // Initialize with given size
 bstream_t *bstream_init_from(void *data, int size); // Ownership always transferred without copying
 bstream_t *bstream_init_copy(void *data, int size); // Ownership transferred by copying
+bstream_t *bstream_init_local(bstream_t *bstream, void *data, int size); // Local var on the stack
 void bstream_free(bstream_t *bstream);
 void bstream_realloc(bstream_t *bstream, int size); // Change the size of data array, can expend or shrink
 

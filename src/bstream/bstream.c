@@ -34,7 +34,17 @@ bstream_t *bstream_init_copy(void *data, int size) {
   return bstream;
 }
 
+bstream_t *bstream_init_local(bstream_t *bstream, void *data, int size) {
+  memset(bstream, 0x00, sizeof(bstream_t));
+  bstream->local = 1;
+  bstream->owner = 0;
+  bstream->data = data;
+  bstream->size = size;
+  return bstream;
+}
+
 void bstream_free(bstream_t *bstream) {
+  if(bstream->local == 1) error_exit("Could not free local bstream instance\n");
   if(bstream->owner == 1) free(bstream->data);
   free(bstream);
   return;
