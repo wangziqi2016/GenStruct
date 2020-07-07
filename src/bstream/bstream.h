@@ -18,9 +18,6 @@ typedef struct {
   // Shared for reads and writes
   int bit_pos;        // Bit offset
   int byte_pos;       // Byte offset
-  // Control flags
-  int read_eos_error;    // Report error if read past EOS (default truncate)
-  int write_eos_error;   // Report error if write past EOS (default auto-expand)
 } bstream_t;
 
 bstream_t *bstream_init();              // Initialize with default size
@@ -32,9 +29,7 @@ void bstream_realloc(bstream_t *bstream, int size); // Change the size of data a
 
 void bstream_advance(bstream_t *bstream, int bits); // Advance from the current pos by given bits
 
-// Setting control variables
-void bstream_set_read_eos_error(bstream_t *bstream, int value);  // Only 0/1
-void bstream_set_write_eos_error(bstream_t *bstream, int value); // Only 0/1
+
 
 // Returns number of bits
 inline static int bstream_get_byte_pos(bstream_t *bstream) { return bstream->byte_pos; }

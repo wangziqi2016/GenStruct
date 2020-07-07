@@ -97,7 +97,8 @@ int bstream_write(bstream_t *bstream, void *p, int bits) {
       error_exit("Bits remaining (%d) smaller than write amount (%d)\n", rem, bits);
     //}
   }
-  
+  bstream_copy(bstream, src, bits);
+  return ;
 }
 
 // Low-level function. There will not be out-of-range read or write
