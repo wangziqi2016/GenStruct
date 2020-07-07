@@ -66,7 +66,7 @@ static int test_write_cb_write_cb(bstream_t *bstream) {
   FILE *fp = (FILE *)bstream_get_arg(bstream);
   // Write pos_byte such that even if the buf is not full we can still write correct number
   int ret = fwrite(bstream_get_data(bstream), bstream_get_pos_byte(bstream), 1, fp);
-  assert(ret == 1);
+  //assert(ret == 1);
   // Reset for further write
   bstream_reset(bstream);
   return 0;
@@ -79,8 +79,11 @@ static int test_write_cb_read_cb(bstream_t *bstream) {
   int ret = fread(bstream_get_data(bstream), 1, bstream_get_size(bstream), fp);
   // Terminate read or shift the data to the end of the buffer to trigger a zero read next time and read will return 0
   if(ret < bstream_get_size(bstream)) {
-    memmove(bstream_get_data(bstream) + bstream_get_size(bstream) - ret, bstream_get_data(bstream), ret);
+    int byte_pos = bstream_get_size(bstream) - ret;
+    memmove(bstream_get_data(bstream) + byte_pos, bstream_get_data(bstream), ret);
+    bstream->byte_pos = byte_pos;
   } else if(ret == 0) {
+    bstream_invalidate(bstream); // Next access triggers end
     return 1;
   }
   return 0;
@@ -89,8 +92,13 @@ static int test_write_cb_read_cb(bstream_t *bstream) {
 void test_write_cb() {
   TEST_BEGIN();
   const int count = 4096;
-  // Make sure it never overflows
-  bstream_t *bstream = bstream_init_size(count * sizeof(uint64_t));
+  const char *filename = "test_write_cb.bin";
+  // Use smaller buffer to trigger read and write cb
+  bstream_t *bstream = bstream_init_size(256); 
+  FILE *fp = fopen(filename, "wb");
+  bstream_set_read_cb(bstream, test_write_cb_read_cb);
+  bstream_set_write_cb(bstream, test_write_cb_read_cb);
+  bstream_set_arg(bstream, fp);
   // Generate random numbers and bit lengths
   uint64_t values[4096];
   int bits[4096];
@@ -102,16 +110,25 @@ void test_write_cb() {
     bstream_write(bstream, values + i, bits[i]);
     total_bits += bits[i];
   }
+  // Write back the rest data
+  if(bstream_get_pos(bstream) != 0) test_write_cb_write_cb(bstream);
   printf("Written bits %d; Pos %d rem %d\n", total_bits, bstream_get_pos(bstream), bstream_get_rem(bstream));
-  // Reset read head
-  bstream_reset(bstream);
+  fclose(fp);
+  fp = fopen(filename, "rb");
+  bstream_set_arg(bstream, fp);
+  // Invalidate such that next read access triggers
+  bstream_invalidate(bstream);
   for(int i = 0;i < count;i++) {
+    uint64_t value; // Read into this var from the stream
+    int ret = bstream_read(bstream, &value, bits[i]);
+    assert(ret == bits[i]);
     for(int j = 0;j < bits[i];j++) {
       // The j-th bit of the word must equal current location on bstream
-      assert(bit64_test(values[i], j) == bstream_get_bit(bstream));
-      bstream_advance(bstream, 1);
+      assert(bit64_test(values[i], j) == bit64_test(value, j));
     }
   }
+  // Must be already at the end
+  assert(bstream_read(bstream, NULL, 1000) == 0);
   bstream_free(bstream);
   TEST_PASS();
   return;
