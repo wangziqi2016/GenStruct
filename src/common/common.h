@@ -7,6 +7,10 @@
 #include <error.h>
 #include <stdint.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 
 // Error reporting and system call assertion
 #define SYSEXPECT(expr) do { if(!(expr)) { perror(__func__); exit(1); } } while(0)
@@ -70,7 +74,9 @@ inline static void bitsprint8_le(char *buf, uint8_t value) { bitsprint8(buf, val
 #define STREQ(a, b) (strcmp(a, b) == 0)
 
 // File macros
-int file_rem(FILE *fp); // Remaining number of bytes in the file
+int fp_rem(FILE *fp); // Remaining number of bytes in the file
+int file_size(const char *name); // Get size using a name
+
 
 // Testing function print name and pass
 #define TEST_BEGIN() do { printf("========== %s ==========\n", __func__); } while(0);

@@ -49,3 +49,9 @@ int file_rem(FILE *fp) {
   fseek(fp, curr, SEEK_SET);
   return end - curr;
 }
+
+int file_size(const char *name) {
+  struct stat buf;
+  stat(name, &buf);
+  return (int)buf->st_size;
+}
