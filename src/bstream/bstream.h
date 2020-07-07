@@ -57,6 +57,7 @@ inline static int bstream_get_byte_rem(bstream_t *bstream) { return 8 - bstream-
 inline static int bstream_get_bit(bstream_t *bstream) { 
   return bit8_test(bstream->data[bstream->byte_pos], bstream->bit_pos); 
 }
+inline static void *bstream_get_arg(bstream_t *bstream) { return bstream->arg; }
 inline static void bstream_reset(bstream_t *bstream) { bstream->byte_pos = bstream->bit_pos = 0; }
 
 void bstream_copy(bstream_t *dest, bstream_t *src, int bits);
