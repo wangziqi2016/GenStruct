@@ -47,5 +47,6 @@ inline static int bstream_get_rem(bstream_t *bstream) { return bstream_get_eos_p
 inline static int bstream_get_byte_rem(bstream_t *bstream) { return 8 - bstream->bit_pos; }
 
 void bstream_plan(bstream_t *bstream, int bits, int *head_bits, int *mid_bytes, int *tail_bits);
+void bstream_print(bstream_t *bstream);
 
 #endif

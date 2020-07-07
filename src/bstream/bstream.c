@@ -72,6 +72,7 @@ void bstream_advance(bstream_t *bstream, int bits) {
     bstream->bit_pos = bits_rem - byte_rem; // Hard case: Advance to next byte
   }
   assert(bstream_get_rem(bstream) >= 0);
+  assert(bstream->bit_pos >= 0 && bstream->bit_pos < 8);
   return;
 }
 
@@ -161,4 +162,11 @@ int bstream_copy(bstream_t *dest, bstream_t *src, int bits) {
   while(bits != 0) {
 
   }
+  return 0;
+}
+
+void bstream_print(bstream_t *bstream) {
+  printf("[bstream] size %d pos byte %d bit %d own %d\n", 
+    bstream->size, bstream->byte_pos, bstream->bit_pos, bstream->owner);
+  return;
 }
