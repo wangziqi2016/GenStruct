@@ -90,13 +90,15 @@ void bstream_set_write_eos_error(bstream_t *bstream, int value) {
 // Returns actual number of bits written; Report error if write beyond EOS and the write error flag is on
 int bstream_write(bstream_t *bstream, void *p, int bits) {
   int rem = bstream_get_rem(bstream);
+  int copy_bits = bits;
   if(rem < bits) {
-    //if(bstream->write_eos_error == 0) {
-    //  bits = rem;
-    //} else {
+    if(bstream->read_cb == NULL) {
       error_exit("Bits remaining (%d) smaller than write amount (%d)\n", rem, bits);
-    //}
+    } else {
+      copy_bits = rem;
+    }
   }
+  
   bstream_copy(bstream, src, bits);
   return ;
 }

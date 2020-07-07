@@ -11,13 +11,20 @@
 
 #define BSTREAM_INIT_SIZE 256
 
-typedef struct {
+struct bstream_struct_t;
+
+typedef void (*bstream_rw_cb_t)(struct bstream_struct_t *bstream);
+
+typedef struct bstream_struct_t {
   uint8_t *data;         // Buffer data
   int owner;             // Whether the object owns the buffer
   int size;              // Number of bytes in the data buffer
   // Shared for reads and writes
   int bit_pos;        // Bit offset
   int byte_pos;       // Byte offset
+  // Read/write call backs; If NULL just report error
+  bstream_rw_cb_t read_cb;  // Called when read request reaches end of buffer
+  bstream_rw_cb_t write_cb; // Called when write request reaches end of buffer
 } bstream_t;
 
 bstream_t *bstream_init();              // Initialize with default size
@@ -29,7 +36,9 @@ void bstream_realloc(bstream_t *bstream, int size); // Change the size of data a
 
 void bstream_advance(bstream_t *bstream, int bits); // Advance from the current pos by given bits
 
-
+// Read and write call backs; If not set default to NULL
+inline static void bstream_set_read_cb(bstream_t *bstream, bstream_rw_cb_t read_cb) { bstream->read_cb = read_cb; }
+inline static void bstream_set_write_cb(bstream_t *bstream, bstream_rw_cb_t write_cb) { bstream->write_cb = write_cb; }
 
 // Returns number of bits
 inline static int bstream_get_byte_pos(bstream_t *bstream) { return bstream->byte_pos; }
