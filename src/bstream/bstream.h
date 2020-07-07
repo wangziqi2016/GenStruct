@@ -13,7 +13,8 @@
 
 struct bstream_struct_t;
 
-typedef void (*bstream_rw_cb_t)(struct bstream_struct_t *bstream);
+// Returns 1 to terminate the current operation
+typedef int (*bstream_rw_cb_t)(struct bstream_struct_t *bstream);
 
 typedef struct bstream_struct_t {
   uint8_t *data;         // Buffer data
@@ -48,9 +49,11 @@ inline static void bstream_set_arg(bstream_t *bstream, void *arg) { bstream->arg
 inline static int bstream_get_byte_pos(bstream_t *bstream) { return bstream->byte_pos; }
 inline static int bstream_get_bit_pos(bstream_t *bstream) { return bstream->bit_pos; }
 inline static int bstream_get_pos(bstream_t *bstream) { return bstream->byte_pos * 8 + bstream->bit_pos; }
-inline static int bstream_get_eos_pos(bstream_t *bstream) { return bstream->size * 8; }
+// Number of bytes (rounded up) at current pos
+inline static int bstream_get_pos_byte(bstream_t *bstream) { return (bstream_get_pos(bstream) + 7) / 8; }
+inline static int bstream_get_end_pos(bstream_t *bstream) { return bstream->size * 8; }
 // Total number of bits remaining in the buffer
-inline static int bstream_get_rem(bstream_t *bstream) { return bstream_get_eos_pos(bstream) - bstream_get_pos(bstream); }
+inline static int bstream_get_rem(bstream_t *bstream) { return bstream_get_end_pos(bstream) - bstream_get_pos(bstream); }
 // Number of bits remaining in the current byte
 inline static int bstream_get_byte_rem(bstream_t *bstream) { return 8 - bstream->bit_pos; }
 // Return current bit location
@@ -59,10 +62,12 @@ inline static int bstream_get_bit(bstream_t *bstream) {
 }
 inline static void *bstream_get_arg(bstream_t *bstream) { return bstream->arg; }
 inline static uint8_t *bstream_get_data(bstream_t *bstream) { return bstream->data; }
+inline static uint8_t *bstream_get_size(bstream_t *bstream) { return bstream->size; }
 inline static void bstream_reset(bstream_t *bstream) { bstream->byte_pos = bstream->bit_pos = 0; }
 
 void bstream_copy(bstream_t *dest, bstream_t *src, int bits);
-void bstream_write(bstream_t *bstream, void *p, int bits);
+int bstream_write(bstream_t *bstream, void *p, int bits);
+int bstream_read(bstream_t *bstream, void *p, int bits);
 
 void bstream_print(bstream_t *bstream);
 

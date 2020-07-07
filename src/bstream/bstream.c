@@ -107,17 +107,18 @@ void bstream_copy(bstream_t *dest, bstream_t *src, int bits) {
 }
 
 // Returns actual number of bits written; Report error if write beyond EOS and the write error flag is on
-void bstream_write(bstream_t *bstream, void *p, int bits) {
+int bstream_write(bstream_t *bstream, void *p, int bits) {
   // Create a local object as wrapper
   bstream_t src_, *src = &src_;
   // Size of the local buffer is rounded up to the nearest 8 byte, since it is guaranteed that we at least have
   // an entire byte even if "bits" is not multiple of 8
   bstream_init_local(src, p, (bits + 7) / 8);
+  int actual_bits = 0;
   while(bits != 0) {
     int rem = bstream_get_rem(bstream);
     int copy_bits = bits;
     if(rem < bits) {
-      if(bstream->read_cb == NULL) {
+      if(bstream->write_cb == NULL) {
         error_exit("Bits remaining (%d) smaller than write amount (%d)\n", rem, bits);
       }
       // Only copy to the rest of the buffer, call the write cb, and loop back
@@ -125,12 +126,41 @@ void bstream_write(bstream_t *bstream, void *p, int bits) {
     }
     bstream_copy(bstream, src, copy_bits);
     bits -= copy_bits;
+    actual_bits += copy_bits;
     if(bits != 0) {
-      // This function is expected to empty the buffer and reset it
-      bstream->write_cb(bstream);
+      // This function is expected to empty the buffer and reset it, or terminate write
+      int ret = bstream->write_cb(bstream);
+      if(ret == 1) break;
     }
   }
-  return;
+  return actual_bits;
+}
+
+// Return zero means 
+int bstream_read(bstream_t *bstream, void *p, int bits) {
+  bstream_t dest_, *dest = &dest_;
+  bstream_init_local(dest, p, (bits + 7) / 8);
+  int actual_bits = 0;
+  while(bits != 0) {
+    int rem = bstream_get_rem(bstream);
+    int copy_bits = bits;
+    if(rem < bits) {
+      if(bstream->read_cb == NULL) {
+        error_exit("Bits remaining (%d) smaller than read amount (%d)\n", rem, bits);
+      }
+      copy_bits = rem;
+    }
+    bstream_copy(dest, bstream, copy_bits);
+    bits -= copy_bits;
+    actual_bits += copy_bits;
+    if(bits != 0) {
+      // Either the application knows how many bits to expect, or the cb has some methods to
+      // let this function return 0 such that caller could know
+      int ret = bstream->read_cb(bstream);
+      if(ret == 1) break;
+    }
+  }
+  return actual_bits;
 }
 
 void bstream_print(bstream_t *bstream) {
