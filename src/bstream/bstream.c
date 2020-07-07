@@ -71,6 +71,7 @@ void bstream_advance(bstream_t *bstream, int bits) {
     bstream->byte_pos++;
     bstream->bit_pos = bits_rem - byte_rem; // Hard case: Advance to next byte
   }
+  assert(bstream_get_rem(bstream) >= 0);
   return;
 }
 

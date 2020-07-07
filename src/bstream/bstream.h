@@ -37,6 +37,8 @@ void bstream_set_read_eos_error(bstream_t *bstream, int value);  // Only 0/1
 void bstream_set_write_eos_error(bstream_t *bstream, int value); // Only 0/1
 
 // Returns number of bits
+inline static int bstream_get_byte_pos(bstream_t *bstream) { return bstream->byte_pos; }
+inline static int bstream_get_bit_pos(bstream_t *bstream) { return bstream->bit_pos; }
 inline static int bstream_get_pos(bstream_t *bstream) { return bstream->byte_pos * 8 + bstream->bit_pos; }
 inline static int bstream_get_eos_pos(bstream_t *bstream) { return bstream->size * 8; }
 // Total number of bits remaining in the buffer
