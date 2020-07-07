@@ -26,6 +26,7 @@ typedef struct bstream_struct_t {
   // Read/write call backs; If NULL just report error
   bstream_rw_cb_t read_cb;  // Called when read request reaches end of buffer
   bstream_rw_cb_t write_cb; // Called when write request reaches end of buffer
+  void *arg;                // Argument used to store information for cb
 } bstream_t;
 
 bstream_t *bstream_init();              // Initialize with default size
@@ -41,6 +42,7 @@ void bstream_advance(bstream_t *bstream, int bits); // Advance from the current 
 // Read and write call backs; If not set default to NULL
 inline static void bstream_set_read_cb(bstream_t *bstream, bstream_rw_cb_t read_cb) { bstream->read_cb = read_cb; }
 inline static void bstream_set_write_cb(bstream_t *bstream, bstream_rw_cb_t write_cb) { bstream->write_cb = write_cb; }
+inline static void bstream_set_arg(bstream_t *bstream, void *arg) { bstream->arg = arg; }
 
 // Returns number of bits
 inline static int bstream_get_byte_pos(bstream_t *bstream) { return bstream->byte_pos; }
