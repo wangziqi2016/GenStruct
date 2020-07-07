@@ -98,19 +98,32 @@ void bstream_set_write_eos_error(bstream_t *bstream, int value) {
 }
 
 // Returns actual number of bits written; Report error if write beyond EOS and the write error flag is on
-int bstream_write(bstream_t *bstream, void *p, int bits) {
-  int rem = bstream_get_rem(bstream);
-  int copy_bits = bits;
-  if(rem < bits) {
-    if(bstream->read_cb == NULL) {
-      error_exit("Bits remaining (%d) smaller than write amount (%d)\n", rem, bits);
-    } else {
+void bstream_write(bstream_t *bstream, void *p, int bits) {
+  // Create a local object as wrapper
+  bstream src_, *src = &src_;
+  // Size of the local buffer is rounded up to the nearest 8 byte, since it is guaranteed that we at least have
+  // an entire byte even if "bits" is not multiple of 8
+  bstream_init_local(src, p, (bits + 7) / 8);
+  while(1) {
+    int rem = bstream_get_rem(bstream);
+    int copy_bits = bits;
+    if(rem < bits) {
+      if(bstream->read_cb == NULL) {
+        error_exit("Bits remaining (%d) smaller than write amount (%d)\n", rem, bits);
+      }
+      // Only copy to the rest of the buffer, call the write cb, and loop back
       copy_bits = rem;
     }
+    bstream_copy(bstream, src, copy_bits);
+    bits -= copy_bits;
+    if(bits != 0) {
+      // This function is expected to empty the buffer and reset it
+      bstream->write_cb(bstream);
+    } else {
+      break;
+    }
   }
-  
-  bstream_copy(bstream, src, bits);
-  return ;
+  return;
 }
 
 // Low-level function. There will not be out-of-range read or write
