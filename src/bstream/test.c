@@ -35,7 +35,62 @@ void test_write_no_cb() {
   TEST_BEGIN();
   const int count = 4096;
   // Make sure it never overflows
-  bstream_t *bstream = bstream_init_size(count);
+  bstream_t *bstream = bstream_init_size(count * sizeof(uint64_t));
+  // Generate random numbers and bit lengths
+  uint64_t values[4096];
+  int bits[4096];
+  srand(time(NULL));
+  int total_bits = 0;
+  for(int i = 0;i < count;i++) {
+    values[i] = ((uint64_t)rand() << 32) | (uint64_t)rand();
+    bits[i] = rand() % 65; // Can be 0 - 64 bits
+    bstream_write(bstream, values + i, bits[i]);
+    total_bits += bits[i];
+  }
+  printf("Written bits %d; Pos %d rem %d\n", total_bits, bstream_get_pos(bstream), bstream_get_rem(bstream));
+  // Reset read head
+  bstream_reset(bstream);
+  for(int i = 0;i < count;i++) {
+    for(int j = 0;j < bits[i];j++) {
+      // The j-th bit of the word must equal current location on bstream
+      assert(bit64_test(values[i], j) == bstream_get_bit(bstream));
+      bstream_advance(bstream, 1);
+    }
+  }
+  bstream_free(bstream);
+  TEST_PASS();
+  return;
+}
+
+static int test_write_cb_write_cb(bstream_t *bstream) {
+  FILE *fp = (FILE *)bstream_get_arg(bstream);
+  // Write pos_byte such that even if the buf is not full we can still write correct number
+  int ret = fwrite(bstream_get_data(bstream), bstream_get_pos_byte(bstream), 1, fp);
+  assert(ret == 1);
+  // Reset for further write
+  bstream_reset(bstream);
+  return 0;
+}
+
+static int test_write_cb_read_cb(bstream_t *bstream) {
+  FILE *fp = (FILE *)bstream_get_arg(bstream);
+  bstream_reset(bstream);
+  // Note that we read at 1 byte granularity. If EOF is seen then only read till that point
+  int ret = fread(bstream_get_data(bstream), 1, bstream_get_size(bstream), fp);
+  // Terminate read or shift the data to the end of the buffer to trigger a zero read next time and read will return 0
+  if(ret < bstream_get_size(bstream)) {
+    memmove(bstream_get_data(bstream) + bstream_get_size(bstream) - ret, bstream_get_data(bstream), ret);
+  } else if(ret == 0) {
+    return 1;
+  }
+  return 0;
+}
+
+void test_write_cb() {
+  TEST_BEGIN();
+  const int count = 4096;
+  // Make sure it never overflows
+  bstream_t *bstream = bstream_init_size(count * sizeof(uint64_t));
   // Generate random numbers and bit lengths
   uint64_t values[4096];
   int bits[4096];
@@ -66,6 +121,7 @@ int main() {
   printf("========== main ==========\n");
   test_advance();
   test_write_no_cb();
+  test_write_cb();
   printf("==========================\n");
   return 0;
 }
