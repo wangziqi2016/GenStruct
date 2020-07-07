@@ -113,7 +113,7 @@ void bstream_write(bstream_t *bstream, void *p, int bits) {
   // Size of the local buffer is rounded up to the nearest 8 byte, since it is guaranteed that we at least have
   // an entire byte even if "bits" is not multiple of 8
   bstream_init_local(src, p, (bits + 7) / 8);
-  while(1) {
+  while(bits != 0) {
     int rem = bstream_get_rem(bstream);
     int copy_bits = bits;
     if(rem < bits) {
@@ -128,8 +128,6 @@ void bstream_write(bstream_t *bstream, void *p, int bits) {
     if(bits != 0) {
       // This function is expected to empty the buffer and reset it
       bstream->write_cb(bstream);
-    } else {
-      break;
     }
   }
   return;

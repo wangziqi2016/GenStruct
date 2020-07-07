@@ -51,6 +51,10 @@ inline static int bstream_get_eos_pos(bstream_t *bstream) { return bstream->size
 inline static int bstream_get_rem(bstream_t *bstream) { return bstream_get_eos_pos(bstream) - bstream_get_pos(bstream); }
 // Number of bits remaining in the current byte
 inline static int bstream_get_byte_rem(bstream_t *bstream) { return 8 - bstream->bit_pos; }
+// Return current bit location
+inline static int bstream_get_bit(bstream_t *bstream) { 
+  return bit8_test(bstream->data[bstream->byte_pos], bstream->bit_pos); 
+}
 inline static void bstream_reset(bstream_t *bstream) { bstream->byte_pos = bstream->bit_pos = 0; }
 
 void bstream_copy(bstream_t *dest, bstream_t *src, int bits);
