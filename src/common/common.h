@@ -66,7 +66,11 @@ void bitsprint8(char *buf, uint8_t value, int dir); // Print 8 bit value to a bu
 inline static void bitsprint8_be(char *buf, uint8_t value) { bitsprint8(buf, value, BITSPRINT_BE); }
 inline static void bitsprint8_le(char *buf, uint8_t value) { bitsprint8(buf, value, BITSPRINT_LE); }
 
+// String macros
 #define STREQ(a, b) (strcmp(a, b) == 0)
+
+// File macros
+int file_rem(FILE *fp); // Remaining number of bytes in the file
 
 // Testing function print name and pass
 #define TEST_BEGIN() do { printf("========== %s ==========\n", __func__); } while(0);

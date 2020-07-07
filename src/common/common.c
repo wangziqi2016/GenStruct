@@ -39,3 +39,13 @@ void bitsprint8(char *buf, uint8_t value, int dir) {
   buf[8] = '\0';
   return;
 }
+
+//* File
+
+int file_rem(FILE *fp) {
+  int curr = ftell(fp);
+  fseek(fp, 0, SEEK_END);
+  int end = ftell(fp);
+  fseek(fp, curr, SEEK_SET);
+  return end - curr;
+}
