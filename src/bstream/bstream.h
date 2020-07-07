@@ -62,8 +62,12 @@ inline static int bstream_get_bit(bstream_t *bstream) {
 }
 inline static void *bstream_get_arg(bstream_t *bstream) { return bstream->arg; }
 inline static uint8_t *bstream_get_data(bstream_t *bstream) { return bstream->data; }
-inline static uint8_t *bstream_get_size(bstream_t *bstream) { return bstream->size; }
+inline static int bstream_get_size(bstream_t *bstream) { return bstream->size; }
+
+// Set to the beginning of the buffer
 inline static void bstream_reset(bstream_t *bstream) { bstream->byte_pos = bstream->bit_pos = 0; }
+// Set to the end of the buffer (such that the next read/write will trigger call back)
+inline static void bstream_invalidate(bstream_t *bstream) { bstream->byte_pos = bstream->size; bstream->bit_pos = 0; }
 
 void bstream_copy(bstream_t *dest, bstream_t *src, int bits);
 int bstream_write(bstream_t *bstream, void *p, int bits);
