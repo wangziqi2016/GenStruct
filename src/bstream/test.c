@@ -1,4 +1,5 @@
 
+#include <time.h>
 #include "bstream.h"
 
 void test_advance() {
@@ -25,6 +26,36 @@ void test_advance() {
   // This is the pos of the very end of the buffer
   assert(bstream_get_rem(bstream) == 0);
   assert(bstream_get_pos(bstream) == 32 * 8);
+  bstream_free(bstream);
+  TEST_PASS();
+  return;
+}
+
+void test_write_no_cb() {
+  TEST_BEGIN();
+  const int count = 4096;
+  // Make sure it never overflows
+  bstream_t *bstream = bstream_init_size(count);
+  // Generate random numbers and bit lengths
+  uint64_t values[4096];
+  int bits[4096];
+  srand(time(NULL));
+  for(int i = 0;i < count;i++) {
+    values[i] = ((uint64_t)rand() << 32) | (uint64_t)rand();
+    bits[i] = rand() % 65; // Can be 0 - 64 bits
+    bstream_write(bstream, values + i, bits[i]);
+  }
+  int pos = 0;
+  // Reset read head
+  bstream_reset(bstream);
+  for(int i = 0;i < count;i++) {
+    for(int j = 0;j < bits[i];j++) {
+      // The j-th bit of the word must equal current location on bstream
+      assert(bit64_test(values, j) == bstream_get_bit(bstream));
+      bstream_advance(bstream, 1);
+    }
+  }
+  bstream_free(bstream);
   TEST_PASS();
   return;
 }
@@ -32,6 +63,7 @@ void test_advance() {
 int main() {
   printf("========== main ==========\n");
   test_advance();
+  test_write_no_cb();
   printf("==========================\n");
   return 0;
 }
