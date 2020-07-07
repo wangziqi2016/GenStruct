@@ -64,9 +64,10 @@ void test_write_no_cb() {
 
 static int test_write_cb_write_cb(bstream_t *bstream) {
   FILE *fp = (FILE *)bstream_get_arg(bstream);
+  //printf("byte %d bit %d\n", bstream->byte_pos, bstream->bit_pos);
   // Write pos_byte such that even if the buf is not full we can still write correct number
   int ret = fwrite(bstream_get_data(bstream), bstream_get_pos_byte(bstream), 1, fp);
-  //assert(ret == 1);
+  assert(ret == 1 || ret == 0);
   // Reset for further write
   bstream_reset(bstream);
   return 0;
@@ -97,7 +98,7 @@ void test_write_cb() {
   bstream_t *bstream = bstream_init_size(256); 
   FILE *fp = fopen(filename, "wb");
   bstream_set_read_cb(bstream, test_write_cb_read_cb);
-  bstream_set_write_cb(bstream, test_write_cb_read_cb);
+  bstream_set_write_cb(bstream, test_write_cb_write_cb);
   bstream_set_arg(bstream, fp);
   // Generate random numbers and bit lengths
   uint64_t values[4096];
@@ -129,6 +130,7 @@ void test_write_cb() {
   }
   // Must be already at the end
   assert(bstream_read(bstream, NULL, 1000) == 0);
+  fclose(fp);
   bstream_free(bstream);
   TEST_PASS();
   return;

@@ -117,6 +117,7 @@ int bstream_write(bstream_t *bstream, void *p, int bits) {
   while(bits != 0) {
     int rem = bstream_get_rem(bstream);
     int copy_bits = bits;
+    //printf("bits %d rem %d\n", bits, rem);
     if(rem < bits) {
       if(bstream->write_cb == NULL) {
         error_exit("Bits remaining (%d) smaller than write amount (%d)\n", rem, bits);
