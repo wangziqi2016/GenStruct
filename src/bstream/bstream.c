@@ -86,10 +86,30 @@ void bstream_advance(bstream_t *bstream, int bits) {
   return;
 }
 
+// Low-level function. There will not be out-of-range read or write
+// Copy from current pos from src to current pos to dest; Guaranteed copy "bits" bits
+// This function will move dest and src pointers
+void bstream_copy(bstream_t *dest, bstream_t *src, int bits) {
+  assert(bits <= bstream_get_rem(dest));
+  assert(bits <= bstream_get_rem(src));
+  while(bits != 0) {
+    int dest_rem = bstream_get_byte_rem(dest);
+    int src_rem = bstream_get_byte_rem(dest);
+    int copy_bits = (dest_rem < src_rem) ? dest_rem : src_rem;
+    if(copy_bits > bits) copy_bits = bits;
+    bitcpy8(dest->data + dest->byte_pos, src->data + src->byte_pos, dest->bit_pos, src->bit_pos, copy_bits);
+    bstream_advance(dest, copy_bits);
+    bstream_advance(src, copy_bits);
+    bits -= copy_bits;
+    assert(bits >= 0);
+  }
+  return;
+}
+
 // Returns actual number of bits written; Report error if write beyond EOS and the write error flag is on
 void bstream_write(bstream_t *bstream, void *p, int bits) {
   // Create a local object as wrapper
-  bstream src_, *src = &src_;
+  bstream_t src_, *src = &src_;
   // Size of the local buffer is rounded up to the nearest 8 byte, since it is guaranteed that we at least have
   // an entire byte even if "bits" is not multiple of 8
   bstream_init_local(src, p, (bits + 7) / 8);
@@ -111,26 +131,6 @@ void bstream_write(bstream_t *bstream, void *p, int bits) {
     } else {
       break;
     }
-  }
-  return;
-}
-
-// Low-level function. There will not be out-of-range read or write
-// Copy from current pos from src to current pos to dest; Guaranteed copy "bits" bits
-// This function will move dest and src pointers
-void bstream_copy(bstream_t *dest, bstream_t *src, int bits) {
-  assert(bits <= bstream_get_rem(dest));
-  assert(bits <= bstream_get_rem(src));
-  while(bits != 0) {
-    int dest_rem = bstream_get_byte_rem(dest);
-    int src_rem = bstream_get_byte_rem(dest);
-    int copy_bits = (dest_rem < src_rem) ? dest_rem : src_rem;
-    if(copy_bits > bits) copy_bits = bits;
-    bitcpy8(dest->data + dest->byte_pos, src->data + src->byte_pos, dest->bit_pos, src->bit_pos, copy_bits);
-    bstream_advance(dest, copy_bits);
-    bstream_advance(src, copy_bits);
-    bits -= copy_bits;
-    assert(bits >= 0);
   }
   return;
 }
