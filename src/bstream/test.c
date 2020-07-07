@@ -40,18 +40,20 @@ void test_write_no_cb() {
   uint64_t values[4096];
   int bits[4096];
   srand(time(NULL));
+  int total_bits = 0;
   for(int i = 0;i < count;i++) {
     values[i] = ((uint64_t)rand() << 32) | (uint64_t)rand();
     bits[i] = rand() % 65; // Can be 0 - 64 bits
     bstream_write(bstream, values + i, bits[i]);
+    total_bits += bits[i];
   }
-  int pos = 0;
+  printf("Written bits %d; Pos %d rem %d\n", total_bits, bstream_get_pos(bstream), bstream_get_rem(bstream));
   // Reset read head
   bstream_reset(bstream);
   for(int i = 0;i < count;i++) {
     for(int j = 0;j < bits[i];j++) {
       // The j-th bit of the word must equal current location on bstream
-      assert(bit64_test(values, j) == bstream_get_bit(bstream));
+      assert(bit64_test(values[i], j) == bstream_get_bit(bstream));
       bstream_advance(bstream, 1);
     }
   }

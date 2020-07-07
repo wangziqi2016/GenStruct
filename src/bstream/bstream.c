@@ -94,7 +94,7 @@ void bstream_copy(bstream_t *dest, bstream_t *src, int bits) {
   assert(bits <= bstream_get_rem(src));
   while(bits != 0) {
     int dest_rem = bstream_get_byte_rem(dest);
-    int src_rem = bstream_get_byte_rem(dest);
+    int src_rem = bstream_get_byte_rem(src);
     int copy_bits = (dest_rem < src_rem) ? dest_rem : src_rem;
     if(copy_bits > bits) copy_bits = bits;
     bitcpy8(dest->data + dest->byte_pos, src->data + src->byte_pos, dest->bit_pos, src->bit_pos, copy_bits);
