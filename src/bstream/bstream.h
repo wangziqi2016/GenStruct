@@ -44,6 +44,8 @@ void bstream_advance(bstream_t *bstream, int bits); // Advance from the current 
 inline static void bstream_set_read_cb(bstream_t *bstream, bstream_rw_cb_t read_cb) { bstream->read_cb = read_cb; }
 inline static void bstream_set_write_cb(bstream_t *bstream, bstream_rw_cb_t write_cb) { bstream->write_cb = write_cb; }
 inline static void bstream_set_arg(bstream_t *bstream, void *arg) { bstream->arg = arg; }
+inline static void bstream_set_byte_pos(bstream_t *bstream, int pos) { bstream->byte_pos = pos; }
+inline static void bstream_set_bit_pos(bstream_t *bstream, int pos) { bstream->bit_pos = pos; }
 
 // Returns number of bits
 inline static int bstream_get_byte_pos(bstream_t *bstream) { return bstream->byte_pos; }
