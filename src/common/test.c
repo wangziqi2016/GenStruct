@@ -99,15 +99,18 @@ void test_bitcpy() {
   return;
 }
 
-void test_file_rem() {
+void test_fp_rem() {
   TEST_BEGIN();
   FILE *fp = fopen("common.h", "r");
   SYSEXPECT(fp != NULL);
   int before, after;
-  printf("common.h file size %d\n", before = file_rem(fp));
+  printf("common.h file size %d\n", before = fp_rem(fp));
   fseek(fp, before / 3, SEEK_SET);
-  printf("common.h file rem %d\n", after = file_rem(fp));
-  assert(after - before == before / 3);
+  printf("common.h file rem %d\n", after = fp_rem(fp));
+  assert(before - after == before / 3);
+  int sz = file_size("common.h");
+  printf("common.h file size via syscall %d\n", sz);
+  assert(sz == before);
   fclose(fp);
   TEST_PASS();
   return;
@@ -120,7 +123,7 @@ int main() {
   test_bitsprintf8();
   test_bit8_gen();
   test_bitcpy();
-  test_file_rem();
+  test_fp_rem();
   printf("==========================\n");
   return 0;
 }

@@ -42,7 +42,7 @@ void bitsprint8(char *buf, uint8_t value, int dir) {
 
 //* File
 
-int file_rem(FILE *fp) {
+int fp_rem(FILE *fp) {
   int curr = ftell(fp);
   fseek(fp, 0, SEEK_END);
   int end = ftell(fp);
@@ -53,5 +53,5 @@ int file_rem(FILE *fp) {
 int file_size(const char *name) {
   struct stat buf;
   stat(name, &buf);
-  return (int)buf->st_size;
+  return (int)(buf.st_size);
 }
