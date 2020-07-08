@@ -87,17 +87,23 @@ static int test_write_cb_write_cb(bstream_t *bstream) {
 static int test_write_cb_read_cb(bstream_t *bstream) {
   FILE *fp = (FILE *)bstream_get_arg(bstream);
   bstream_reset(bstream);
-  // Note that we read at 1 byte granularity. If EOF is seen then only read till that point
-  int ret = fread(bstream_get_data(bstream), 1, bstream_get_size(bstream), fp);
-  // Terminate read or shift the data to the end of the buffer to trigger a zero read next time and read will return 0
-  if(ret < bstream_get_size(bstream)) {
-    int byte_pos = bstream_get_size(bstream) - ret;
-    memmove(bstream_get_data(bstream) + byte_pos, bstream_get_data(bstream), ret);
-    bstream->byte_pos = byte_pos;
-  } else if(ret == 0) {
-    bstream_invalidate(bstream); // Next access triggers end
-    return 1;
+  int file_rem = fp_rem(fp);
+  void *copy_start = bstream_get_data(bstream);
+  int copy_size = bstream_get_size(bstream);
+  if(file_rem == 0) {
+    bstream_invalidate(bstream); // Next access will return zero
+    return 1;                    // Signal EOS to caller
+  } else if(file_rem < bstream_get_size(bstream)) {
+    // Adjust read pointer such that the last byte of the file is the last byte in the buffer
+    copy_size = file_rem;
+    int copy_offset = bstream_get_size(bstream) - file_rem;
+    copy_start = bstream_get_data(bstream) + copy_offset;
+    bstream_set_bit_pos(bstream, 0);
+    bstream_set_byte_pos(bstream, copy_offset);
   }
+  // Note that we read at 1 byte granularity. If EOF is seen then only read till that point
+  int ret = fread(copy_start, 1, copy_size, fp);
+  assert(ret == copy_size); 
   return 0;
 }
 
@@ -128,7 +134,7 @@ void test_write_cb() {
   fclose(fp);
   fp = fopen(filename, "rb");
   bstream_set_arg(bstream, fp);
-  // Invalidate such that next read access triggers
+  // Invalidate such that next read access triggers read call back
   bstream_invalidate(bstream);
   for(int i = 0;i < count;i++) {
     uint64_t value; // Read into this var from the stream
@@ -140,7 +146,19 @@ void test_write_cb() {
     }
   }
   // Must be already at the end
-  //assert(bstream_read(bstream, NULL, 1000) == 0);
+  int total_rem = 8 - total_bits % 8; // Number of bits we still have in the buffer (wild bits)
+  uint64_t dummy;
+  // Read a large range but we can only actually read the last few bits
+  int dummy_ret = bstream_read(bstream, &dummy, 1000);
+  printf("Reading the last few bits... ret = %d (expecting %d)\n", dummy_ret, total_rem);
+  assert(dummy_ret == total_rem);
+  dummy_ret = bstream_read(bstream, &dummy, 1000);
+  printf("Reading invalidated stream 1... ret = %d (expecting 0)\n", dummy_ret);
+  dummy_ret = bstream_read(bstream, &dummy, 1000);
+  printf("Reading invalidated stream 2... ret = %d (expecting 0)\n", dummy_ret);
+  dummy_ret = bstream_read(bstream, &dummy, 1000);
+  printf("Reading invalidated stream 3... ret = %d (expecting 0)\n", dummy_ret);
+  assert(dummy_ret == 0);
   fclose(fp);
   bstream_free(bstream);
   TEST_PASS();
