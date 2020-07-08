@@ -57,6 +57,17 @@ void test_write_no_cb() {
       bstream_advance(bstream, 1);
     }
   }
+  // Test whole copy using bstream copy
+  bstream_t *bstream2 = bstream_init_size(count * sizeof(uint64_t));
+  bstream_reset(bstream);
+  bstream_copy(bstream2, bstream, total_bits);
+  // Reset both to compare
+  bstream_reset(bstream);
+  bstream_reset(bstream2);
+  for(int i = 0;i < total_bits;i++) {
+    assert(bstream_get_bit(bstream) == bstream_get_bit(bstream2));
+  }
+  bstream_free(bstream2);
   bstream_free(bstream);
   TEST_PASS();
   return;
