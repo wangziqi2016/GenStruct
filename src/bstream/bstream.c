@@ -92,6 +92,7 @@ void bstream_advance(bstream_t *bstream, int bits) {
 void bstream_copy(bstream_t *dest, bstream_t *src, int bits) {
   assert(bits <= bstream_get_rem(dest));
   assert(bits <= bstream_get_rem(src));
+  assert(bits >= 0);
   while(bits != 0) {
     int dest_rem = bstream_get_byte_rem(dest);
     int src_rem = bstream_get_byte_rem(src);
@@ -108,6 +109,9 @@ void bstream_copy(bstream_t *dest, bstream_t *src, int bits) {
 
 // Returns actual number of bits written; Report error if write beyond EOS and the write error flag is on
 int bstream_write(bstream_t *bstream, void *p, int bits) {
+  if(bits < 0) {
+    error_exit("Bits must be non-negative (see %d)\n", bits);
+  }
   // Create a local object as wrapper
   bstream_t src_, *src = &src_;
   // Size of the local buffer is rounded up to the nearest 8 byte, since it is guaranteed that we at least have
@@ -139,6 +143,9 @@ int bstream_write(bstream_t *bstream, void *p, int bits) {
 
 // Return zero means 
 int bstream_read(bstream_t *bstream, void *p, int bits) {
+  if(bits < 0) {
+    error_exit("Bits must be non-negative (see %d)\n", bits);
+  }
   bstream_t dest_, *dest = &dest_;
   bstream_init_local(dest, p, (bits + 7) / 8);
   int actual_bits = 0;
