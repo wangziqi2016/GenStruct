@@ -101,14 +101,22 @@ void test_bitcpy() {
 
 void test_mask() {
   TEST_BEGIN();
+  int x = 64;
+  printf("%lu %lu\n", 0x1UL << x, (0x1UL << x) - 1);
   // Note that mask can accept 0 - 64, rather than 0 - 63
   for(int bits = 0;bits <= 64;bits++) {
     uint64_t value1 = MASK64_LOW_1(bits);
+    uint64_t value2 = MASK64_HIGH_1(bits);
     for(int i = 0;i < 64;i++) {
       if(i < bits) {
         assert(bit64_test(value1, i) == 1);
       } else {
         assert(bit64_test(value1, i) == 0);
+      }
+      if(i >= 64 - bits) {
+        assert(bit64_test(value2, i) == 1);
+      } else {
+        assert(bit64_test(value2, i) == 0);
       }
     }
   }
@@ -122,6 +130,8 @@ void test_bit_range() {
     for(int bits = 1; bits <= 64 - start;bits++) {
       uint64_t value1 = MASK64_RANGE_1(start, bits);
       uint64_t value2 = MASK64_RANGE_0(start, bits);
+      // Both values must be exact complement to each other
+      assert((value1 ^ value2) == -1UL); 
       // Check whether all bits are set or cleared as planned
       for(int i = 0;i < 64;i++) {
         if(i >= start && i < start + bits) {
