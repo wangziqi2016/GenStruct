@@ -99,16 +99,37 @@ void test_bitcpy() {
   return;
 }
 
+void test_mask() {
+  TEST_BEGIN();
+  // Note that mask can accept 0 - 64, rather than 0 - 63
+  for(int bits = 0;bits <= 64;bits++) {
+    uint64_t value1 = MASK64_LOW_1(bits);
+    for(int i = 0;i < 64;i++) {
+      if(i < bits) {
+        assert(bit64_test(value1, i) == 1);
+      } else {
+        assert(bit64_test(value1, i) == 0);
+      }
+    }
+  }
+  TEST_PASS();
+  return;
+}
+
 void test_bit_range() {
   TEST_BEGIN();
   for(int start = 0;start < 64;start++) {
-    for(int bits = 1; bits < 64 - start;bits++) {
-      uint64_t value = MASK64_RANGE_1(start, bits);
+    for(int bits = 1; bits <= 64 - start;bits++) {
+      uint64_t value1 = MASK64_RANGE_1(start, bits);
+      uint64_t value2 = MASK64_RANGE_0(start, bits);
+      // Check whether all bits are set or cleared as planned
       for(int i = 0;i < 64;i++) {
         if(i >= start && i < start + bits) {
-          assert(bit64_test(value, start + i) == 1);
+          assert(bit64_test(value1, i) == 1);
+          assert(bit64_test(value2, i) == 0);
         } else {
-          assert(bit64_test(value, start + i) == 0);
+          assert(bit64_test(value1, i) == 0);
+          assert(bit64_test(value2, i) == 1);
         }
       }
     }
@@ -141,6 +162,7 @@ int main() {
   test_bitsprintf8();
   test_bit8_gen();
   test_bitcpy();
+  test_mask();
   test_bit_range();
   test_fp_rem();
   printf("==========================\n");
