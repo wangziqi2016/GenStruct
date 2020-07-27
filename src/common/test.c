@@ -99,6 +99,24 @@ void test_bitcpy() {
   return;
 }
 
+void test_bit_range() {
+  TEST_BEGIN();
+  for(int start = 0;start < 64;start++) {
+    for(int bits = 1; bits < 64 - start;bits++) {
+      uint64_t value = MASK64_RANGE_1(start, bits);
+      for(int i = 0;i < 64;i++) {
+        if(i >= start && i < start + bits) {
+          assert(bit64_test(value, start + i) == 1);
+        } else {
+          assert(bit64_test(value, start + i) == 0);
+        }
+      }
+    }
+  }
+  TEST_PASS();
+  return;
+}
+
 void test_fp_rem() {
   TEST_BEGIN();
   FILE *fp = fopen("common.h", "r");
@@ -123,6 +141,7 @@ int main() {
   test_bitsprintf8();
   test_bit8_gen();
   test_bitcpy();
+  test_bit_range();
   test_fp_rem();
   printf("==========================\n");
   return 0;
