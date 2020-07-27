@@ -27,7 +27,7 @@
 #define MASK64_HIGH_1(num) (~(MASK64_LOW_1(64 - num)))
 #define MASK64_LOW_0(num)  (~MASK64_LOW_1(num))
 #define MASK64_HIGH_0(num) (~MASK64_HIGH_1(num))
-#define MASK64_RANGE_1(start, bits) (MASK64_LOW_1(bits) << start)
+#define MASK64_RANGE_1(start, bits) (MASK64_LOW_1(bits) << start) // [start, start + bits) are 1, otherwise 0
 #define MASK64_RANGE_0(start, bits) (~MASK64_RANGE_1(start, bits))
 
 // From 0 to 8, indexed by the number of bits
@@ -41,14 +41,15 @@ extern uint8_t mask8_1[8];
 #define MASK8_HIGH_1(num) (mask8_high_1[num])
 #define MASK8_LOW_0(num)  (~MASK8_LOW_1(num))
 #define MASK8_HIGH_0(num) (~MASK8_HIGH_1(num))
-#define MASK8_RANGE_1(start, bits) (MASK8_LOW_1(bits) << start)
+#define MASK8_RANGE_1(start, bits) (MASK8_LOW_1(bits) << start) // [start, start + bits) are 1, otherwise 0
 #define MASK8_RANGE_0(start, bits) (~MASK8_RANGE_1(start, bits))
 
 // Extracts the bit 
 inline static int bit64_test(uint64_t value, int index) { return !!(value & MASK64_1(index)); }
 inline static int bit8_test(uint8_t value, int index) { return !!(value & MASK8_1(index)); }
 
-inline static uint64_t bit64_clear()
+inline static uint64_t bit64_clear(uint64_t value, int start, int bits) { return value & MASK64_RANGE_0(start, bits); }
+inline static uint8_t bit8_clear(uint8_t value, int start, int bits) { return value & MASK8_RANGE_0(start, bits); }
 
 uint8_t bit8_gen(const char *s); // Generates 8 bit values using "1" and "0" string
 
