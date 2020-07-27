@@ -22,8 +22,12 @@
 #endif
 
 // Bit masks
+extern uint64_t mask64_low_1[65];
+
 #define MASK64_1(index)    (0x1UL << index)
-#define MASK64_LOW_1(num)  ((1UL << num) - 1)
+// Note: This is wrong! The hardware shifter will first truncate "num" down to 6 bits before using it for shifting
+//#define MASK64_LOW_1(num)  ((1UL << num) - 1)
+#define MASK64_LOW_1(num)  (mask64_low_1[num])
 #define MASK64_HIGH_1(num) (~(MASK64_LOW_1(64 - num)))
 #define MASK64_LOW_0(num)  (~MASK64_LOW_1(num))
 #define MASK64_HIGH_0(num) (~MASK64_HIGH_1(num))
