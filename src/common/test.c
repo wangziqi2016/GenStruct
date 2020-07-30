@@ -183,6 +183,24 @@ void test_bit_range_set_clear() {
   return;
 }
 
+void test_popcount() {
+  TEST_BEGIN();
+  assert(bit64_popcount(0x55aaaa5555aaaa55UL) == 32);
+  assert(bit64_popcount(0xffffffffffffffffUL) == 64);
+  assert(bit64_popcount(0x0UL) == 0);
+  assert(bit64_popcount(0x8000000000000000) == 1);
+  assert(bit32_popcount(0x55aaaa55) == 16);
+  assert(bit32_popcount(0xffffffff) == 32);
+  assert(bit32_popcount(0x0) == 0);
+  assert(bit32_popcount(0x80000000) == 1);
+  assert(bit8_popcount(0x5a) == 4);
+  assert(bit8_popcount(0xff) == 8);
+  assert(bit8_popcount(0x00) == 0);
+  assert(bit8_popcount(0x80) == 1);
+  TEST_PASS();
+  return;
+}
+
 void test_fp_rem() {
   TEST_BEGIN();
   FILE *fp = fopen("common.h", "r");
@@ -210,6 +228,7 @@ int main() {
   test_mask();
   test_bit_range();
   test_bit_range_set_clear();
+  test_popcount();
   test_fp_rem();
   printf("==========================\n");
   return 0;
