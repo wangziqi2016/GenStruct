@@ -30,10 +30,10 @@ uint64_t mask64_low_1[65] = {
 
 uint64_t bit_gen(const char *s, int bits) {
   int len = strlen(s);
-  if(bits > 64 || bits < 1) error_exit("bits must be between [1, 64] (see %d)\n", bits);
+  if(bits > 64 || bits < 1) error_exit("Number of bits must be between [1, 64] (see %d)\n", bits);
   if(len < 1 || len > bits) error_exit("Invalid bit string length (expect [1, %d], see %d)\n", bits, len);
   uint64_t value = 0UL;
-  int shift = len - 1;
+  int shift = len - 1; // Shift is between 0 and 63 inclusive
   while(*s) {
     if(*s != '0' && *s != '1') error_exit("Unexpected char: 0x%02X\n", *s);
     if(*s  == '1') value |= (0x1UL << shift);
