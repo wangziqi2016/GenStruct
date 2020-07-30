@@ -218,6 +218,20 @@ void test_fp_rem() {
   return;
 }
 
+void test_islog2() {
+  TEST_BEGIN();
+  assert(islog2_8(0x80) == 1);
+  assert(islog2_8(0xaa) == 0);
+  assert(islog2_u8(0x80) == 1);
+  assert(islog2_u8(0x88) == 0);
+  assert(islog2_u64(65536UL) == 1);
+  assert(islog2_u64(12345UL) == 0);
+  assert(islog2_64(12345L) == 0);
+  assert(islog2_64(0x8000000000000000) == 1);
+  TEST_PASS();
+  return;
+}
+
 int main() {
   printf("========== main ==========\n");
   test_sysexpect();
@@ -229,6 +243,7 @@ int main() {
   test_bit_range();
   test_bit_range_set_clear();
   test_popcount();
+  test_islog2();
   test_fp_rem();
   printf("==========================\n");
   return 0;
