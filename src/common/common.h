@@ -56,7 +56,8 @@ inline static uint64_t bit64_clear(uint64_t value, int start, int bits) { return
 inline static uint8_t bit8_clear(uint8_t value, int start, int bits) { return value & MASK8_RANGE_0(start, bits); }
 
 uint64_t bit_gen(const char *s, int bits); // Generate 64 bit string using "1" and "0", MSB first
-uint8_t bit8_gen(const char *s); // Generates 8 bit values using "1" and "0" string
+inline static uint8_t bit8_gen(const char *s) { return (uint8_t)bit_gen(s, 8); }
+inline static uint8_t bit64_gen(const char *s) { return (uint8_t)bit_gen(s, 64); }
 
 // Copies bit range in one byte to another byte
 // starts are inclusive; ends are non-inclusive

@@ -44,22 +44,6 @@ uint64_t bit_gen(const char *s, int bits) {
   return value;
 }
 
-// This function is only used for debugging; Will report error if malformed
-uint8_t bit8_gen(const char *s) {
-  int len = strlen(s);
-  if(len < 1 || len > 8) error_exit("Invalid bit string length (see %d)\n", len);
-  uint8_t value = 0x00;
-  int shift = len - 1;
-  while(*s) {
-    if(*s != '0' && *s != '1') error_exit("Unexpected char: 0x%02X\n", *s);
-    if(*s  == '1') value |= (0x1 << shift);
-    shift--;
-    s++;
-  }
-  assert(shift == -1);
-  return value;
-}
-
 void bitsprint8(char *buf, uint8_t value, int dir) {
   assert(dir == BITSPRINT_LE || dir == BITSPRINT_BE);
   uint8_t mask = (dir == BITSPRINT_LE) ? 0x01 : 0x80;
