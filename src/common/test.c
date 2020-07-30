@@ -43,9 +43,10 @@ void test_bitsprintf8() {
   return;
 }
 
-void test_bit8_gen() {
+void test_bit_gen() {
   TEST_BEGIN();
   uint8_t value;
+  // Test 8 bit gen
   value = bit8_gen("10101010"); assert(value == 0xaa);
   value = bit8_gen("01010101"); assert(value == 0x55);
   value = bit8_gen("1010"); assert(value == 0x0a);
@@ -56,6 +57,14 @@ void test_bit8_gen() {
   //value = bit8_gen("12345"); // Illegal char
   //value = bit8_gen("101010100"); // Too long
   //value = bit8_gen(""); // Too short
+  // Test 64 bit gen
+  uint64_t value2;
+  value2 = bit64_gen("0"); assert(value2 == 0);
+  value2 = bit64_gen("1"); assert(value2 == 1);
+  value2 = bit64_gen("1010101010101010010101010101010110101010101010100101010101010101"); 
+  assert(value2 == 0xaaaa5555aaaa5555UL);
+  // Error cases
+  //value2 = bit64_gen("10101010101010100101010101010101101010101010101001010101010101010"); // Too long
   TEST_PASS();
   return;
 }
@@ -169,7 +178,7 @@ int main() {
   test_sysexpect();
   test_dbg_printf();
   test_bitsprintf8();
-  test_bit8_gen();
+  test_bit_gen();
   test_bitcpy();
   test_mask();
   test_bit_range();
