@@ -31,8 +31,8 @@ extern uint64_t mask64_low_1[65];
 #define MASK64_HIGH_1(num) (~(MASK64_LOW_1(64 - num)))
 #define MASK64_LOW_0(num)  (~MASK64_LOW_1(num))
 #define MASK64_HIGH_0(num) (~MASK64_HIGH_1(num))
-#define MASK64_RANGE_1(start, bits) (MASK64_LOW_1(bits) << start) // [start, start + bits) are 1, otherwise 0
-#define MASK64_RANGE_0(start, bits) (~MASK64_RANGE_1(start, bits))
+#define MASK64_RANGE_1(start, bits) (MASK64_LOW_1(bits) << start)  // [start, start + bits) are 1, otherwise 0
+#define MASK64_RANGE_0(start, bits) (~MASK64_RANGE_1(start, bits)) // [start, start + bits) are 0, otherwise 1
 
 // From 0 to 8, indexed by the number of bits
 extern uint8_t mask8_low_1[9];  
@@ -55,6 +55,7 @@ inline static int bit8_test(uint8_t value, int index) { return !!(value & MASK8_
 inline static uint64_t bit64_clear(uint64_t value, int start, int bits) { return value & MASK64_RANGE_0(start, bits); }
 inline static uint8_t bit8_clear(uint8_t value, int start, int bits) { return value & MASK8_RANGE_0(start, bits); }
 
+uint64_t bit_gen(const char *s, int bits); // Generate 64 bit string using "1" and "0", MSB first
 uint8_t bit8_gen(const char *s); // Generates 8 bit values using "1" and "0" string
 
 // Copies bit range in one byte to another byte

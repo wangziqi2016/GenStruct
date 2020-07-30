@@ -28,6 +28,22 @@ uint64_t mask64_low_1[65] = {
   0x1fffffffffffffffUL, 0x3fffffffffffffffUL, 0x7fffffffffffffffUL, 0xffffffffffffffffUL,
 };
 
+uint64_t bit_gen(const char *s, int bits) {
+  int len = strlen(s);
+  if(bits > 64 || bits < 1) error_exit("bits must be between [1, 64] (see %d)\n", bits);
+  if(len < 1 || len > bits) error_exit("Invalid bit string length (expect [1, %d], see %d)\n", bits, len);
+  uint64_t value = 0UL;
+  int shift = len - 1;
+  while(*s) {
+    if(*s != '0' && *s != '1') error_exit("Unexpected char: 0x%02X\n", *s);
+    if(*s  == '1') value |= (0x1UL << shift);
+    shift--;
+    s++;
+  }
+  assert(shift == -1);
+  return value;
+}
+
 // This function is only used for debugging; Will report error if malformed
 uint8_t bit8_gen(const char *s) {
   int len = strlen(s);

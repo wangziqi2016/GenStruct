@@ -101,8 +101,7 @@ void test_bitcpy() {
 
 void test_mask() {
   TEST_BEGIN();
-  int x = 64;
-  printf("%lu %lu\n", 0x1UL << x, (0x1UL << x) - 1);
+  //printf("0x%lX 0x%lX\n", 0x1UL << 64, (0x1UL << 64) - 1);
   // Note that mask can accept 0 - 64, rather than 0 - 63
   for(int bits = 0;bits <= 64;bits++) {
     uint64_t value1 = MASK64_LOW_1(bits);
