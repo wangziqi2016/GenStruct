@@ -52,8 +52,11 @@ extern uint8_t mask8_1[8];
 inline static int bit64_test(uint64_t value, int index) { return !!(value & MASK64_1(index)); }
 inline static int bit8_test(uint8_t value, int index) { return !!(value & MASK8_1(index)); }
 
-inline static uint64_t bit64_clear(uint64_t value, int start, int bits) { return value & MASK64_RANGE_0(start, bits); }
-inline static uint8_t bit8_clear(uint8_t value, int start, int bits) { return value & MASK8_RANGE_0(start, bits); }
+inline static uint64_t bit64_range_set(uint64_t value, int start, int bits) { return value | MASK64_RANGE_1(start, bits); }
+inline static uint8_t bit8_range_set(uint8_t value, int start, int bits) { return value | MASK8_RANGE_1(start, bits); }
+
+inline static uint64_t bit64_range_clear(uint64_t value, int start, int bits) { return value & MASK64_RANGE_0(start, bits); }
+inline static uint8_t bit8_range_clear(uint8_t value, int start, int bits) { return value & MASK8_RANGE_0(start, bits); }
 
 inline static uint8_t randu8() { return (uint8_t)rand(); }
 // Note that rand() may return a number less than 64 bits, but most likely it will be at least 15 bits
