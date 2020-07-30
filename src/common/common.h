@@ -48,6 +48,12 @@ extern uint8_t mask8_1[8];
 #define MASK8_RANGE_1(start, bits) (MASK8_LOW_1(bits) << start) // [start, start + bits) are 1, otherwise 0
 #define MASK8_RANGE_0(start, bits) (~MASK8_RANGE_1(start, bits))
 
+inline static int bit64_popcount(uint64_t value) { return __builtin_popcountl(value); }
+inline static int bit32_popcount(uint32_t value) { return __builtin_popcount(value); }
+inline static int bit8_popcount(uint8_t value) { return __builtin_popcount((uint32_t)value); }
+
+
+
 // Extracts the bit 
 inline static int bit64_test(uint64_t value, int index) { return !!(value & MASK64_1(index)); }
 inline static int bit8_test(uint8_t value, int index) { return !!(value & MASK8_1(index)); }
@@ -99,7 +105,6 @@ inline static void bitsprint8_le(char *buf, uint8_t value) { bitsprint8(buf, val
 // File macros
 int fp_rem(FILE *fp); // Remaining number of bytes in the file
 int file_size(const char *name); // Get size using a name
-
 
 // Testing function print name and pass
 #define TEST_BEGIN() do { printf("========== %s ==========\n", __func__); } while(0);
