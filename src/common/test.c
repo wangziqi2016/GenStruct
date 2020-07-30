@@ -156,15 +156,30 @@ void test_bit_range() {
   return;
 }
 
-void test_bit_set() {
+void test_bit_range_set_clear() {
   TEST_BEGIN();
   srand(time(NULL));
+  int count = 0;
   for(int start = 0; start < 64;start++) {
     for(int bits = 1; bits <= 64 - start;bits++) {
-      uint64_t before = rand();
+      uint64_t before = randu64();
+      uint64_t after1 = bit64_range_set(before, start, bits);
+      uint64_t after2 = bit64_range_clear(before, start, bits);
+      count++;
+      // Check bits
+      for(int i = 0;i < 64;i++) {
+        if(i >= start && i < start + bits) {
+          assert(bit64_test(after1, i) == 1);
+          assert(bit64_test(after2, i) == 0);
+        } else {
+          assert(bit64_test(after1, i) == bit64_test(before, i));
+          assert(bit64_test(after2, i) == bit64_test(before, i));
+        }
+      }
     }
   }
-  TEST_END();
+  printf("Checked %d combinations\n", count);
+  TEST_PASS();
   return;
 }
 
@@ -194,7 +209,7 @@ int main() {
   test_bitcpy();
   test_mask();
   test_bit_range();
-  test_bit_set();
+  test_bit_range_set_clear();
   test_fp_rem();
   printf("==========================\n");
   return 0;
