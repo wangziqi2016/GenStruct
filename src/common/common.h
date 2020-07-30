@@ -52,7 +52,12 @@ inline static int bit64_popcount(uint64_t value) { return __builtin_popcountl(va
 inline static int bit32_popcount(uint32_t value) { return __builtin_popcount(value); }
 inline static int bit8_popcount(uint8_t value) { return __builtin_popcount((uint32_t)value); }
 
-
+inline static int islog2_u64(uint64_t value) { return bit64_popcount(value) == 1; }
+inline static int islog2_64(int64_t value) { return bit64_popcount((uint64_t)value) == 1; }
+inline static int islog2_u32(uint32_t value) { return bit32_popcount(value) == 1; }
+inline static int islog2_32(int32_t value) { return bit32_popcount((uint32_t)value) == 1; }
+inline static int islog2_u8(uint8_t value) { return bit8_popcount(value) == 1; }
+inline static int islog2_8(int8_t value) { return bit8_popcount((uint8_t)value) == 1; }
 
 // Extracts the bit 
 inline static int bit64_test(uint64_t value, int index) { return !!(value & MASK64_1(index)); }
