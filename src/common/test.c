@@ -156,6 +156,18 @@ void test_bit_range() {
   return;
 }
 
+void test_bit_set() {
+  TEST_BEGIN();
+  srand(time(NULL));
+  for(int start = 0; start < 64;start++) {
+    for(int bits = 1; bits <= 64 - start;bits++) {
+      uint64_t before = rand();
+    }
+  }
+  TEST_END();
+  return;
+}
+
 void test_fp_rem() {
   TEST_BEGIN();
   FILE *fp = fopen("common.h", "r");
@@ -182,6 +194,7 @@ int main() {
   test_bitcpy();
   test_mask();
   test_bit_range();
+  test_bit_set();
   test_fp_rem();
   printf("==========================\n");
   return 0;
