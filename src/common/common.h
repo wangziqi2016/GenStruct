@@ -22,6 +22,7 @@
 #endif
 
 // Bit masks
+extern uint64_t mask64_1[65].
 extern uint64_t mask64_low_1[65];
 
 #define MASK64_1(index)    (0x1UL << index)
@@ -59,6 +60,10 @@ inline static int islog2_32(int32_t value) { return bit32_popcount((uint32_t)val
 inline static int islog2_u8(uint8_t value) { return bit8_popcount(value) == 1; }
 inline static int islog2_8(int8_t value) { return bit8_popcount((uint8_t)value) == 1; }
 
+// Round up to the next log2; Not changed if already log2; Returns 0 if overflows
+inline static uint64_t nextlog2_u64(uint64_t value) { return value ? MASK64_1(64 - __builtin_clzl(value)) : 0UL; }
+int nextlog2_32(int32_t value);
+
 // Extracts the bit 
 inline static int bit64_test(uint64_t value, int index) { return !!(value & MASK64_1(index)); }
 inline static int bit8_test(uint8_t value, int index) { return !!(value & MASK8_1(index)); }
@@ -69,9 +74,9 @@ inline static uint8_t bit8_range_set(uint8_t value, int start, int bits) { retur
 inline static uint64_t bit64_range_clear(uint64_t value, int start, int bits) { return value & MASK64_RANGE_0(start, bits); }
 inline static uint8_t bit8_range_clear(uint8_t value, int start, int bits) { return value & MASK8_RANGE_0(start, bits); }
 
-inline static uint8_t randu8() { return (uint8_t)rand(); }
+inline static uint8_t rand_u8() { return (uint8_t)rand(); }
 // Note that rand() may return a number less than 64 bits, but most likely it will be at least 15 bits
-inline static uint64_t randu64() { 
+inline static uint64_t rand_u64() { 
   return (uint64_t)rand() ^ ((uint64_t)rand() << 15) ^ ((uint64_t)rand() << 30) ^ \
          ((uint64_t)rand() << 45) ^ ((uint64_t)rand() << 60); 
 }
