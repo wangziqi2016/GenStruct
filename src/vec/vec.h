@@ -42,7 +42,7 @@ inline static int vec_get_capacity(vec_t *vec) { return vec->capacity; }
 inline static void **vec_get_data(vec_t *vec) { return vec->data; }
 
 // Set functions
-void vec_set_count(vec_t *vec); // Set a count for random access; Data might be uninitialized
+void vec_set_count(vec_t *vec, int new_count); // Set a count for random access; Data might be uninitialized
 
 // Iterator
 typedef struct {
