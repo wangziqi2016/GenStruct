@@ -65,6 +65,7 @@ int nextlog2_32(int32_t value);
 
 // Extracts the bit 
 inline static int bit64_test(uint64_t value, int index) { return (value >> index) & 0x1UL; }
+inline static int bit32_test(uint32_t value, int index) { return (value >> index) & 0x1; }
 inline static int bit8_test(uint8_t value, int index) { return (value >> index) & 0x1; }
 
 inline static uint64_t bit64_range_set(uint64_t value, int start, int bits) { return value | MASK64_RANGE_1(start, bits); }

@@ -108,6 +108,33 @@ void test_bitcpy() {
   return;
 }
 
+void test_1_bit_mask() {
+  TEST_BEGIN();
+  for(int index = 0;index < 64;index++) {
+    uint64_t value1 = MASK64_1(index);
+    for(int i = 0;i < 64;i++) {
+      if(i == index) assert(bit64_test(value1, i) == 1);
+      else assert(bit64_test(value1, i) == 0);
+    }
+  }
+  for(int index = 0;index < 32;index++) {
+    uint32_t value1 = MASK32_1(index);
+    for(int i = 0;i < 32;i++) {
+      if(i == index) assert(bit32_test(value1, i) == 1);
+      else assert(bit32_test(value1, i) == 0);
+    }
+  }
+  for(int index = 0;index < 8;index++) {
+    uint8_t value1 = MASK8_1(index);
+    for(int i = 0;i < 8;i++) {
+      if(i == index) assert(bit8_test(value1, i) == 1);
+      else assert(bit8_test(value1, i) == 0);
+    }
+  }
+  TEST_PASS();
+  return;
+}
+
 void test_mask() {
   TEST_BEGIN();
   //printf("0x%lX 0x%lX\n", 0x1UL << 64, (0x1UL << 64) - 1);
@@ -162,7 +189,7 @@ void test_bit_range_set_clear() {
   int count = 0;
   for(int start = 0; start < 64;start++) {
     for(int bits = 1; bits <= 64 - start;bits++) {
-      uint64_t before = randu64();
+      uint64_t before = rand_u64();
       uint64_t after1 = bit64_range_set(before, start, bits);
       uint64_t after2 = bit64_range_clear(before, start, bits);
       count++;
@@ -242,6 +269,7 @@ int main() {
   test_bitsprintf8();
   test_bit_gen();
   test_bitcpy();
+  test_1_bit_mask();
   test_mask();
   test_bit_range();
   test_bit_range_set_clear();
