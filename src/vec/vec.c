@@ -35,4 +35,12 @@ void vec_realloc(vec_t *vec, int new_size) {
   return;
 }
 
+void vec_push(vec_t *vec, void *value) {
+  assert(vec->count >= 0 && vec->count <= vec->capacity);
+  if(vec->count == vec->capacity) vec_realloc(vec, vec->capacity * 2);
+  assert(vec->count < vec->capacity);
+  vec->data[vec->count++] = value;
+  return;
+}
 
+void vec_pop(vec_t *vec, void *value);

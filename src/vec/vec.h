@@ -22,6 +22,7 @@ inline static void **vec_addr(vec_t *vec, int index) {
   return vec->data + index;
 }
 inline static void *vec_at(vec_t *vec, int index) { return *vec_addr(vec, index); }
-
+void vec_push(vec_t *vec, void *value);
+void vec_pop(vec_t *vec, void *value);
 
 #endif
