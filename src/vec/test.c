@@ -74,10 +74,28 @@ void test_addr() {
   return;
 }
 
+void test_it() {
+  TEST_BEGIN();
+  vec_t *vec = vec_init_capacity(1);
+  const int count = 5000;
+  for(int i = 0;i < count;i++) vec_push_32(vec, i);
+  vec_it_t it = vec_it_begin(vec);
+  int curr = 0;
+  while(vec_it_isend(&it) == 0) {
+    assert(vec_it_value_32(&it) == curr);
+    curr++;
+    vec_it_next(&it);
+  }
+  vec_free(vec);
+  TEST_PASS();
+  return;
+}
+
 int main() {
   test_init();
   test_realloc();
   test_push_pop(); // This also tests automatic realloc for push()
   test_addr();
+  test_it();
   return 0;
 }
