@@ -63,10 +63,10 @@ inline static int islog2_8(int8_t value) { return bit8_popcount((uint8_t)value) 
 // Note that __builtin_clzl can return 0 - 63. It overflows when value is larger than 0x8000000000000000
 inline static uint64_t nextlog2_u64(uint64_t value) { return value ? (islog2_u64(value) ? value : MASK64_1(64 - __builtin_clzl(value))) : 1UL; }
 inline static int64_t nextlog2_64(int64_t value) { return value ? (islog2_64(value) ? value : (int64_t)MASK64_1(64 - __builtin_clzl(value))) : 1L; }
-inline static uint32_t nextlog2_u32(uint32_t value) { return value ? (islog2_u32(value) ? value : MASK32_1(32 - __builtin_clzl(value))) : 1; }
-inline static int32_t nextlog2_32(int32_t value) { return value ? (islog2_32(value) ? value : (int32_t)MASK32_1(32 - __builtin_clzl(value))) : 1; }
-inline static uint8_t nextlog2_u8(uint8_t value) { return value ? (islog2_u8(value) ? value : MASK8_1(8 - __builtin_clzl(value))) : 1; }
-inline static int8_t nextlog2_8(int8_t value) { return value ? (islog2_8(value) ? value : (int8_t)MASK8_1(8 - __builtin_clzl(value))) : 1; }
+inline static uint32_t nextlog2_u32(uint32_t value) { return value ? (islog2_u32(value) ? value : MASK32_1(32 - __builtin_clz(value))) : 1; }
+inline static int32_t nextlog2_32(int32_t value) { return value ? (islog2_32(value) ? value : (int32_t)MASK32_1(32 - __builtin_clz(value))) : 1; }
+inline static uint8_t nextlog2_u8(uint8_t value) { return value ? (islog2_u8(value) ? value : MASK8_1(8 - __builtin_clz(value))) : 1; }
+inline static int8_t nextlog2_8(int8_t value) { return value ? (islog2_8(value) ? value : (int8_t)MASK8_1(8 - __builtin_clz(value))) : 1; }
 
 // Extracts the bit 
 inline static int bit64_test(uint64_t value, int index) { return (value >> index) & 0x1UL; }
