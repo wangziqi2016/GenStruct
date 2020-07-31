@@ -21,7 +21,12 @@ inline static void **vec_addr(vec_t *vec, int index) {
   assert(index >= 0 && index < vec->count);
   return vec->data + index;
 }
+inline static uint64_t *vec_addr_u64(vec_t *vec, int index) { return (uint64_t *)vec_addr(vec, index); }
+inline static int32_t *vec_addr_32(vec_t *vec, int index) { return (int32_t *)vec_addr(vec, index); }
+
 inline static void *vec_at(vec_t *vec, int index) { return *vec_addr(vec, index); }
+inline static uint64_t vec_at_u64(vec_t *vec, int index) { return (uint64_t)vec_at(vec, index); }
+inline static int32_t vec_at_32(vec_t *vec, int index) { return (int32_t)(uint64_t)vec_at(vec, index); }
 
 void vec_push(vec_t *vec, void *value);
 void *vec_pop(vec_t *vec);
@@ -46,5 +51,6 @@ inline static vec_it_t vec_it_begin(vec_t *vec) { vec_it_t it = {vec, 0}; return
 inline static int vec_it_isend(vec_it_t *it) { return it->index == it->vec->count; }
 inline static void vec_it_next(vec_it_t *it) { assert(it->index >= 0 && it->index < it->vec->count); it->index++; }
 inline static void *vec_it_value(vec_it_t *it) { return it->vec->data[it->index]; }
+
 
 #endif
