@@ -42,8 +42,8 @@ extern uint8_t mask8_high_1[9];
 extern uint8_t mask8_1[8];
 
 #define MASK8_1(index)    (mask8_1[index])   // Single bit 1 mask; Index of bit given in arg
-#define MASK8_LOW_1(num)  (mask8_low_1[num]) // All-one mask in lower bits; Number of 1 given in arg
-#define MASK8_HIGH_1(num) (mask8_high_1[num])
+#define MASK8_LOW_1(num)  (MASK8_1(num) - 1) // All-one mask in lower bits; Number of 1 given in arg
+#define MASK64_HIGH_1(num) (~(MASK8_LOW_1(8 - num)))
 #define MASK8_LOW_0(num)  (~MASK8_LOW_1(num))
 #define MASK8_HIGH_0(num) (~MASK8_HIGH_1(num))
 #define MASK8_RANGE_1(start, bits) (MASK8_LOW_1(bits) << start) // [start, start + bits) are 1, otherwise 0
