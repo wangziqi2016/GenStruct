@@ -78,11 +78,16 @@ void test_it() {
   TEST_BEGIN();
   vec_t *vec = vec_init_capacity(1);
   const int count = 5000;
-  for(int i = 0;i < count;i++) vec_push_32(vec, i);
+  for(int i = 0;i < count;i++) {
+    vec_push_32(vec, i);
+    vec_addr_32(vec, i)[1] = i * 2 + 1; // Store a hidden 32 bit value
+  }
   vec_it_t it = vec_it_begin(vec);
   int curr = 0;
   while(vec_it_isend(&it) == 0) {
     assert(vec_it_value_32(&it) == curr);
+    assert(*vec_it_addr_32(&it) == curr);
+    assert((int32_t)(*vec_it_addr_u64(&it) >> 32) == curr * 2 + 1);
     curr++;
     vec_it_next(&it);
   }
