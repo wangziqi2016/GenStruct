@@ -29,7 +29,7 @@ void *vec_pop(vec_t *vec);
 inline static void vec_push_u64(vec_t *vec, uint64_t value) { vec_push(vec, (void *)value); }
 inline static uint64_t vec_pop_u64(vec_t *vec) { return (uint64_t)vec_pop(vec); }
 inline static void vec_push_32(vec_t *vec, int32_t value) { vec_push(vec, (void *)(uint64_t)value); }
-inline static int32_t vec_pop_32(vec_t *vec) { return (int32_t)vec_pop(vec); }
+inline static int32_t vec_pop_32(vec_t *vec) { return (int32_t)(uint64_t)vec_pop(vec); }
 
 // Get functions
 inline static int vec_get_count(vec_t *vec) { return vec->count; }
@@ -42,7 +42,7 @@ typedef struct {
   int index;
 } vec_it_t;
 
-vec_it_t vec_it_begin(vec_t *vec) { return {vec, 0}; }
+vec_it_t vec_it_begin(vec_t *vec) { vec_it_t it = {vec, 0}; return it; }
 int vec_it_isend(vec_it_t *it) { return it->index == it->vec->count; }
 void vec_it_next(vec_it_t *it) { assert(it->index >= 0 && it->index < it->vec->count); it->index++; }
 void *vec_it_value(vec_it_t *it) { return it->vec->data[it->index]; }

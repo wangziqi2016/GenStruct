@@ -24,7 +24,7 @@ void vec_free(vec_t *vec) {
 }
 
 void vec_realloc(vec_t *vec, int new_size) {
-  if(size <= 0) error_exit("New size of vec_t must be positive (see %d)\n", new_size);
+  if(new_size <= 0) error_exit("New size of vec_t must be positive (see %d)\n", new_size);
   void **old_data = vec->data;
   vec->capacity = new_size;
   vec->data = (void **)malloc(sizeof(void *) * new_size);
