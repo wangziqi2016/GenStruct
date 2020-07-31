@@ -209,6 +209,28 @@ void test_bit_range_64() {
   return;
 }
 
+void test_bit_range_32() {
+  TEST_BEGIN();
+  for(int start = 0;start < 32;start++) {
+    for(int bits = 1; bits <= 32 - start;bits++) {
+      uint32_t value1 = MASK32_RANGE_1(start, bits);
+      uint32_t value2 = MASK32_RANGE_0(start, bits);
+      assert((value1 ^ value2) == -1UL); 
+      for(int i = 0;i < 32;i++) {
+        if(i >= start && i < start + bits) {
+          assert(bit32_test(value1, i) == 1);
+          assert(bit32_test(value2, i) == 0);
+        } else {
+          assert(bit32_test(value1, i) == 0);
+          assert(bit32_test(value2, i) == 1);
+        }
+      }
+    }
+  }
+  TEST_PASS();
+  return;
+}
+
 void test_bit_range_set_clear() {
   TEST_BEGIN();
   srand(time(NULL));
