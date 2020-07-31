@@ -332,6 +332,29 @@ void test_islog2() {
   return;
 }
 
+void test_nextlog2() {
+  TEST_BEGIN();
+  assert(nextlog2_u64(0UL) == 1UL);  // Corner case
+  assert(nextlog2_u64(-1UL) == 0UL); // Overflow
+  assert(nextlog2_u64(255UL) == 256UL);
+  assert(nextlog2_u64(65536UL) == 65536UL);
+  assert(nextlog2_u64(0x7FFFFFFFFFFFFFFFUL) == 0x8000000000000000UL);
+  assert(nextlog2_u64(0x8000000000000001UL) == 0UL); // Overflow
+  // Random number test
+  srand(time(NULL));
+  for(int i = 0;i < 1000;i++) {
+    uint64_t num = rand_u64();
+    uint64_t log2 = nextlog2_u64(num);
+    //printf("num 0x%lX log2 %lX\n", num, log2);
+    if(num > 0x8000000000000000) assert(log2 == 0UL);
+    else if(num == 0) assert(log2 == 1UL);
+    else if(bit64_popcount(num) == 1) assert(log2 == num);
+    else assert(bit64_popcount(log2) == 1 && log2 > num && (log2 >> 1) < num);
+  }
+  TEST_PASS();
+  return;
+}
+
 int main() {
   printf("========== main ==========\n");
   test_sysexpect();
@@ -348,8 +371,9 @@ int main() {
   test_bit_range_8();
   test_bit_range_set_clear();
   test_popcount();
-  test_islog2();
   test_fp_rem();
+  test_islog2();
+  test_nextlog2();
   printf("==========================\n");
   return 0;
 }
