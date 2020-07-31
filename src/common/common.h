@@ -22,13 +22,13 @@
 #endif
 
 // Bit masks
-extern uint64_t mask64_1[65].
+extern uint64_t mask64_1[65];
 extern uint64_t mask64_low_1[65];
 
-#define MASK64_1(index)    (0x1UL << index)
+#define MASK64_1(index)    (mask64_1[index])
 // Note: This is wrong! The hardware shifter will first truncate "num" down to 6 bits before using it for shifting
 //#define MASK64_LOW_1(num)  ((1UL << num) - 1)
-#define MASK64_LOW_1(num)  (mask64_low_1[num])
+#define MASK64_LOW_1(num)  (MASK64_1(num) - 1)
 #define MASK64_HIGH_1(num) (~(MASK64_LOW_1(64 - num)))
 #define MASK64_LOW_0(num)  (~MASK64_LOW_1(num))
 #define MASK64_HIGH_0(num) (~MASK64_HIGH_1(num))
@@ -65,8 +65,8 @@ inline static uint64_t nextlog2_u64(uint64_t value) { return value ? MASK64_1(64
 int nextlog2_32(int32_t value);
 
 // Extracts the bit 
-inline static int bit64_test(uint64_t value, int index) { return !!(value & MASK64_1(index)); }
-inline static int bit8_test(uint8_t value, int index) { return !!(value & MASK8_1(index)); }
+inline static int bit64_test(uint64_t value, int index) { return (value >> index) & 0x1UL; }
+inline static int bit8_test(uint8_t value, int index) { return (value >> index) & 0x1; }
 
 inline static uint64_t bit64_range_set(uint64_t value, int start, int bits) { return value | MASK64_RANGE_1(start, bits); }
 inline static uint8_t bit8_range_set(uint8_t value, int start, int bits) { return value | MASK8_RANGE_1(start, bits); }
