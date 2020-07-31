@@ -24,7 +24,7 @@ inline static void **vec_addr(vec_t *vec, int index) {
 inline static uint64_t *vec_addr_u64(vec_t *vec, int index) { return (uint64_t *)vec_addr(vec, index); }
 inline static int32_t *vec_addr_32(vec_t *vec, int index) { return (int32_t *)vec_addr(vec, index); }
 
-inline static void *vec_at(vec_t *vec, int index) { return *vec_addr(vec, index); }
+inline static void *vec_at(vec_t *vec, int index) { assert(index >= 0 && index < vec->count); return *vec_addr(vec, index); }
 inline static uint64_t vec_at_u64(vec_t *vec, int index) { return (uint64_t)vec_at(vec, index); }
 inline static int32_t vec_at_32(vec_t *vec, int index) { return (int32_t)(uint64_t)vec_at(vec, index); }
 
@@ -40,6 +40,9 @@ inline static int32_t vec_pop_32(vec_t *vec) { return (int32_t)(uint64_t)vec_pop
 inline static int vec_get_count(vec_t *vec) { return vec->count; }
 inline static int vec_get_capacity(vec_t *vec) { return vec->capacity; }
 inline static void **vec_get_data(vec_t *vec) { return vec->data; }
+
+// Set functions
+void vec_set_count(vec_t *vec); // Set a count for random access; Data might be uninitialized
 
 // Iterator
 typedef struct {

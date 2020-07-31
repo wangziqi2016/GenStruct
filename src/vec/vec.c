@@ -48,3 +48,12 @@ void *vec_pop(vec_t *vec) {
   if(vec->count == 0) error_exit("Vector is empty\n");
   return vec->data[--vec->count]; // Decrement first and then access
 }
+
+// Expand the vector by updating the count. Count value must not be larger than capacity
+void vec_set_count(vec_t *vec, int new_count) {
+  if(new_count < 0 || new_count > vec->capacity) {
+    error_exit("New count must be between 0 and current capacity %d (see %d)\n", vec->capacity, new_count);
+  }
+  vec->count = new_count;
+  return;
+}
