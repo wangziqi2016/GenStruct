@@ -65,8 +65,10 @@ inline static uint64_t nextlog2_u64(uint64_t value) { return value ? (islog2_u64
 inline static int64_t nextlog2_64(int64_t value) { return value ? (islog2_64(value) ? value : (int64_t)MASK64_1(64 - __builtin_clzl(value))) : 1L; }
 inline static uint32_t nextlog2_u32(uint32_t value) { return value ? (islog2_u32(value) ? value : MASK32_1(32 - __builtin_clz(value))) : 1; }
 inline static int32_t nextlog2_32(int32_t value) { return value ? (islog2_32(value) ? value : (int32_t)MASK32_1(32 - __builtin_clz(value))) : 1; }
-inline static uint8_t nextlog2_u8(uint8_t value) { return value ? (islog2_u8(value) ? value : MASK8_1(8 - __builtin_clz(value))) : 1; }
-inline static int8_t nextlog2_8(int8_t value) { return value ? (islog2_8(value) ? value : (int8_t)MASK8_1(8 - __builtin_clz(value))) : 1; }
+// Note thatt 8 bit values must still use __builtin_clz(), and the number of bits is also deducted from 32
+// __builtin_clz(value) is in [24, 31]; We must take care not to use sign extension on value
+inline static uint8_t nextlog2_u8(uint8_t value) { return value ? (islog2_u8(value) ? value : MASK8_1(32 - __builtin_clz((uint32_t)value))) : 1; }
+inline static int8_t nextlog2_8(int8_t value) { return value ? (islog2_8(value) ? value : (int8_t)MASK8_1(32 - __builtin_clz((uint32_t)value))) : 1; }
 
 // Extracts the bit 
 inline static int bit64_test(uint64_t value, int index) { return (value >> index) & 0x1UL; }
