@@ -341,7 +341,7 @@ void test_nextlog2() {
   assert(nextlog2_u64(0x7FFFFFFFFFFFFFFFUL) == 0x8000000000000000UL);
   assert(nextlog2_u64(0x8000000000000001UL) == 0UL); // Overflow
   // Random number test
-  srand(time(NULL));
+  rand_init();
   for(int i = 0;i < 1000;i++) {
     uint64_t num = rand_u64();
     uint64_t log2 = nextlog2_u64(num);
@@ -350,6 +350,38 @@ void test_nextlog2() {
     else if(num == 0) assert(log2 == 1UL);
     else if(bit64_popcount(num) == 1) assert(log2 == num);
     else assert(bit64_popcount(log2) == 1 && log2 > num && (log2 >> 1) < num);
+  }
+  TEST_PASS();
+  return;
+}
+
+void test_rand() {
+  TEST_BEGIN();
+  int high_bits[256];
+  int low_bits[256];
+  int mid_bits[256];
+  memset(high_bits, 0x00, sizeof(high_bits));
+  memset(low_bits, 0x00, sizeof(low_bits));
+  memset(mid_bits, 0x00, sizeof(mid_bits));
+  rand_init();
+  for(int i = 0;i < 1000000;i++) {
+    uint64_t num = rand_u64();
+    high_bits[num >> 56]++;   // Highest 8 bits
+    low_bits[num & 0xFFUL]++; // Lowest 8 bits
+    mid_bits[(num >> 36) & 0xFFUL]++; // Middle 8 bits
+  }
+  int high_total = 0, low_total = 0, mid_total = 0;
+  for(int i = 0;i < 256;i++) {
+    high_total += high_bits[i];
+    low_total += low_bits[i];
+    mid_total += mid_bits[i];
+  }
+  double high_avg = high_total / 256.0;
+  double low_avg = low_total / 256.0;
+  double mid_avg = mid_total / 256.0;
+  double high_dev = 0.0, low_dev = 0.0, mid_dev = 0.0;
+  for(int i = 0;i < 256;i++) {
+    high_dev += () * ();
   }
   TEST_PASS();
   return;
@@ -374,6 +406,7 @@ int main() {
   test_fp_rem();
   test_islog2();
   test_nextlog2();
+  test_rand();
   printf("==========================\n");
   return 0;
 }
