@@ -34,3 +34,8 @@ void vec_realloc(vec_t *vec, int new_size) {
   free(old_data);
   return;
 }
+
+void *vec_at(vec_t *vec, int index) {
+  assert(index >= 0 && index < vec->count);
+  return vec->data[index];
+}
