@@ -53,5 +53,8 @@ inline static void vec_it_next(vec_it_t *it) { assert(it->index >= 0 && it->inde
 inline static void *vec_it_value(vec_it_t *it) { return it->vec->data[it->index]; }
 inline static uint64_t vec_it_value_u64(vec_it_t *it) { return (uint64_t)vec_it_value(it); }
 inline static int32_t vec_it_value_32(vec_it_t *it) { return (int32_t)(uint64_t)vec_it_value(it); }
+inline static void **vec_it_addr(vec_it_t *it) { return &it->vec->data[it->index]; } // Returns the address of the value
+inline static uint64_t *vec_it_addr_u64(vec_it_t *it) { return (uint64_t *)&it->vec->data[it->index]; }
+inline static int32_t *vec_it_addr_32(vec_it_t *it) { return (int32_t *)&it->vec->data[it->index]; }
 
 #endif
