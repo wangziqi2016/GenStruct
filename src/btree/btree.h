@@ -2,6 +2,8 @@
 #ifndef _BTREE_H
 #define _BTREE_H
 
+#include "common.h"
+
 #define BTREE_INNER_CAPACITY 64
 #define BTREE_LEAF_CAPACITY  64
 
@@ -22,5 +24,7 @@ typedef struct {
 typedef struct {
   btree_node_t *root;
 } btree_t;
+
+btree_node_t *btree_node_init(int type);
 
 #endif
