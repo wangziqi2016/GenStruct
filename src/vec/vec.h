@@ -42,9 +42,9 @@ typedef struct {
   int index;
 } vec_it_t;
 
-vec_it_t vec_it_begin(vec_t *vec) { vec_it_t it = {vec, 0}; return it; }
-int vec_it_isend(vec_it_t *it) { return it->index == it->vec->count; }
-void vec_it_next(vec_it_t *it) { assert(it->index >= 0 && it->index < it->vec->count); it->index++; }
-void *vec_it_value(vec_it_t *it) { return it->vec->data[it->index]; }
+inline static vec_it_t vec_it_begin(vec_t *vec) { vec_it_t it = {vec, 0}; return it; }
+inline static int vec_it_isend(vec_it_t *it) { return it->index == it->vec->count; }
+inline static void vec_it_next(vec_it_t *it) { assert(it->index >= 0 && it->index < it->vec->count); it->index++; }
+inline static void *vec_it_value(vec_it_t *it) { return it->vec->data[it->index]; }
 
 #endif

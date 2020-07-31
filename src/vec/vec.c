@@ -3,7 +3,7 @@
 #include "vec.h"
 
 vec_t *vec_init() {
-  return vec_init_size(VEC_INIT_CAPACITY);
+  return vec_init_capacity(VEC_INIT_CAPACITY);
 }
 
 vec_t *vec_init_capacity(int capacity) {
