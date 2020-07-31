@@ -43,4 +43,8 @@ void vec_push(vec_t *vec, void *value) {
   return;
 }
 
-void vec_pop(vec_t *vec, void *value);
+// Note that pop() does not resize the vector automatically. Users should manually resize if necessary
+void *vec_pop(vec_t *vec, void *value) {
+  if(vec->count == 0) error_exit("Vector is empty\n");
+  return vec->data[--vec->count]; // Decrement first and then access
+}
