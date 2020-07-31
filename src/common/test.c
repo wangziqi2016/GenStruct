@@ -135,7 +135,7 @@ void test_1_bit_mask() {
   return;
 }
 
-void test_mask() {
+void test_mask_64() {
   TEST_BEGIN();
   //printf("0x%lX 0x%lX\n", 0x1UL << 64, (0x1UL << 64) - 1);
   // Note that mask can accept 0 - 64, rather than 0 - 63
@@ -143,23 +143,49 @@ void test_mask() {
     uint64_t value1 = MASK64_LOW_1(bits);
     uint64_t value2 = MASK64_HIGH_1(bits);
     for(int i = 0;i < 64;i++) {
-      if(i < bits) {
-        assert(bit64_test(value1, i) == 1);
-      } else {
-        assert(bit64_test(value1, i) == 0);
-      }
-      if(i >= 64 - bits) {
-        assert(bit64_test(value2, i) == 1);
-      } else {
-        assert(bit64_test(value2, i) == 0);
-      }
+      if(i < bits) assert(bit64_test(value1, i) == 1);
+      else assert(bit64_test(value1, i) == 0);
+      if(i >= 64 - bits) assert(bit64_test(value2, i) == 1);
+      else assert(bit64_test(value2, i) == 0);
     }
   }
   TEST_PASS();
   return;
 }
 
-void test_bit_range() {
+void test_mask_32() {
+  TEST_BEGIN();
+  for(int bits = 0;bits <= 32;bits++) {
+    uint32_t value1 = MASK32_LOW_1(bits);
+    uint32_t value2 = MASK32_HIGH_1(bits);
+    for(int i = 0;i < 32;i++) {
+      if(i < bits) assert(bit32_test(value1, i) == 1);
+      else assert(bit32_test(value1, i) == 0); 
+      if(i >= 32 - bits) assert(bit32_test(value2, i) == 1);
+      else assert(bit32_test(value2, i) == 0);
+    }
+  }
+  TEST_PASS();
+  return;
+}
+
+void test_mask_8() {
+  TEST_BEGIN();
+  for(int bits = 0;bits <= 8;bits++) {
+    uint8_t value1 = MASK8_LOW_1(bits);
+    uint8_t value2 = MASK8_HIGH_1(bits);
+    for(int i = 0;i < 8;i++) {
+      if(i < bits) assert(bit8_test(value1, i) == 1);
+      else assert(bit8_test(value1, i) == 0);
+      if(i >= 8 - bits) assert(bit8_test(value2, i) == 1);
+      else assert(bit8_test(value2, i) == 0);
+    }
+  }
+  TEST_PASS();
+  return;
+}
+
+void test_bit_range_64() {
   TEST_BEGIN();
   for(int start = 0;start < 64;start++) {
     for(int bits = 1; bits <= 64 - start;bits++) {
@@ -270,8 +296,12 @@ int main() {
   test_bit_gen();
   test_bitcpy();
   test_1_bit_mask();
-  test_mask();
-  test_bit_range();
+  test_mask_64();
+  test_mask_32();
+  test_mask_8();
+  test_bit_range_64();
+  test_bit_range_32();
+  test_bit_range_8();
   test_bit_range_set_clear();
   test_popcount();
   test_islog2();
