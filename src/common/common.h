@@ -10,7 +10,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-
+#include <time.h>
 
 // Error reporting and system call assertion
 #define SYSEXPECT(expr) do { if(!(expr)) { perror(__func__); exit(1); } } while(0)
@@ -81,6 +81,8 @@ inline static uint64_t bit64_range_clear(uint64_t value, int start, int bits) { 
 inline static uint32_t bit32_range_clear(uint32_t value, int start, int bits) { return value & MASK32_RANGE_0(start, bits); }
 inline static uint8_t bit8_range_clear(uint8_t value, int start, int bits) { return value & MASK8_RANGE_0(start, bits); }
 
+// Random numbers
+inline static void rand_init() { srand(time(NULL)); }
 inline static uint8_t rand_u8() { return (uint8_t)rand(); }
 // Note that rand() may return a number less than 64 bits, but most likely it will be at least 15 bits
 inline static uint64_t rand_u64() { 
