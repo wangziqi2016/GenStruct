@@ -1,5 +1,5 @@
 
-CFLAGS+=
+CFLAGS+=-lm
 
 .phony: all test
 
