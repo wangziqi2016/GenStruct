@@ -60,8 +60,13 @@ inline static int islog2_u8(uint8_t value) { return bit8_popcount(value) == 1; }
 inline static int islog2_8(int8_t value) { return bit8_popcount((uint8_t)value) == 1; }
 
 // Round up to the next log2; Not changed if already log2; Returns 0 if overflows
+// Note that __builtin_clzl can return 0 - 63. It overflows when value is larger than 0x8000000000000000
 inline static uint64_t nextlog2_u64(uint64_t value) { return value ? MASK64_1(64 - __builtin_clzl(value)) : 0UL; }
-int nextlog2_32(int32_t value);
+inline static int64_t nextlog2_64(int64_t value) { return value ? MASK64_1(64 - __builtin_clzl(value)) : 0UL; }
+inline static uint32_t nextlog2_u32(uint32_t value) { return value ? MASK32_1(32 - __builtin_clz(value)) : 0UL; }
+inline static int32_t nextlog2_32(int32_t value) { return value ? MASK32_1(32 - __builtin_clz(value)) : 0UL; }
+inline static uint8_t nextlog2_u8(uint8_t value) { return value ? MASK8_1(8 - __builtin_clz(value)) : 0UL; }
+inline static int8_t nextlog2_8(int8_t value) { return value ? MASK8_1(8 - __builtin_clz(value)) : 0UL; }
 
 // Extracts the bit 
 inline static int bit64_test(uint64_t value, int index) { return (value >> index) & 0x1UL; }
@@ -85,10 +90,11 @@ inline static uint64_t rand_u64() {
 
 uint64_t bit_gen(const char *s, int bits); // Generate 64 bit string using "1" and "0", MSB first
 inline static uint8_t bit8_gen(const char *s) { return (uint8_t)bit_gen(s, 8); }
+inline static uint64_t bit32_gen(const char *s) { return bit_gen(s, 32); }
 inline static uint64_t bit64_gen(const char *s) { return bit_gen(s, 64); }
 
 // Copies bit range in one byte to another byte
-// starts are inclusive; ends are non-inclusive
+// Copy must not across byte boundary
 inline static void bitcpy8(uint8_t *to, uint8_t *from, int to_start, int from_start, int bits) {
   assert(bits >= 0 && bits <= 8);
   assert(to_start >= 0 && to_start + bits <= 8);
