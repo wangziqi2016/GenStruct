@@ -69,9 +69,11 @@ inline static int bit32_test(uint32_t value, int index) { return (value >> index
 inline static int bit8_test(uint8_t value, int index) { return (value >> index) & 0x1; }
 
 inline static uint64_t bit64_range_set(uint64_t value, int start, int bits) { return value | MASK64_RANGE_1(start, bits); }
+inline static uint32_t bit32_range_set(uint32_t value, int start, int bits) { return value | MASK32_RANGE_1(start, bits); }
 inline static uint8_t bit8_range_set(uint8_t value, int start, int bits) { return value | MASK8_RANGE_1(start, bits); }
 
 inline static uint64_t bit64_range_clear(uint64_t value, int start, int bits) { return value & MASK64_RANGE_0(start, bits); }
+inline static uint32_t bit32_range_clear(uint32_t value, int start, int bits) { return value & MASK32_RANGE_0(start, bits); }
 inline static uint8_t bit8_range_clear(uint8_t value, int start, int bits) { return value & MASK8_RANGE_0(start, bits); }
 
 inline static uint8_t rand_u8() { return (uint8_t)rand(); }
