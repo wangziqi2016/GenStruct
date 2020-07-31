@@ -35,23 +35,24 @@ void btree_free(btree_t *btree) {
   return;
 }
 
-// If found, return the index or the next larger index (could be end of array)
-// If exact match is found, value is set to the value; Otherwise value is NULL
-int btree_node_search_u64(btree_node_t *node, uint64_t key, void **value) {
+// If found, return 1, otherwise return 0
+// If exact match is found, index is set to the index of the item; Otherwise it is set
+// to the next largest item (which could point to the end of the array)
+int btree_node_search_u64(btree_node_t *node, uint64_t key, int *index) {
   // Invariant: start < end; Search in [start, end)
   int start = 0, end = node->count;
   while(start < end) {
     int mid = (start + end) / 2;
-    if(key == node->kv[mid].key) {
-      *value = node->kv[mid].value;
-      return mid;
-    } else if(key < node->kv[mid].key) {
+    if(key == (uint64_t)node->kv[mid].key) {
+      *index = mid;
+      return 1;
+    } else if(key < (uint64_t)node->kv[mid].key) {
       end = mid;
     } else {
       start = mid + 1;
     }
   }
-  *value = NULL;
   assert(start == end);
-  return start;
+  *index = start;
+  return 0;
 }
