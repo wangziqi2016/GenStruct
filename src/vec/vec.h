@@ -51,6 +51,7 @@ inline static vec_it_t vec_it_begin(vec_t *vec) { vec_it_t it = {vec, 0}; return
 inline static int vec_it_isend(vec_it_t *it) { return it->index == it->vec->count; }
 inline static void vec_it_next(vec_it_t *it) { assert(it->index >= 0 && it->index < it->vec->count); it->index++; }
 inline static void *vec_it_value(vec_it_t *it) { return it->vec->data[it->index]; }
-
+inline static uint64_t vec_it_value_u64(vec_it_t *it) { return (uint64_t)vec_it_value(it); }
+inline static int32_t vec_it_value_32(vec_it_t *it) { return (int32_t)(uint64_t)vec_it_value(it); }
 
 #endif
