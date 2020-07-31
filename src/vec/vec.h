@@ -15,5 +15,6 @@ typedef struct {
 vec_t *vec_init();              // Initialize using default capacity
 vec_t *vec_init_size(int size); // Better control over initial capacity
 void vec_free(vec_t *vec);
+void vec_realloc(vec_t *vec, int new_size); // Reallocate the storage while keeping the content (truncate if less)
 
 #endif
