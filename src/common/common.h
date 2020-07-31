@@ -71,9 +71,9 @@ inline static uint8_t nextlog2_u8(uint8_t value) { return value ? (islog2_u8(val
 inline static int8_t nextlog2_8(int8_t value) { return value ? (islog2_8(value) ? value : (int8_t)MASK8_1(32 - __builtin_clz((uint32_t)value))) : 1; }
 
 // Extracts the bit 
-inline static int bit64_test(uint64_t value, int index) { return (value >> index) & 0x1UL; }
-inline static int bit32_test(uint32_t value, int index) { return (value >> index) & 0x1; }
-inline static int bit8_test(uint8_t value, int index) { return (value >> index) & 0x1; }
+inline static int bit64_test(uint64_t value, int index) { assert(index >= 0 && index < 64); return (value >> index) & 0x1UL; }
+inline static int bit32_test(uint32_t value, int index) { assert(index >= 0 && index < 32); return (value >> index) & 0x1; }
+inline static int bit8_test(uint8_t value, int index) { assert(index >= 0 && index < 8); return (value >> index) & 0x1; }
 
 inline static uint64_t bit64_range_set(uint64_t value, int start, int bits) { return value | MASK64_RANGE_1(start, bits); }
 inline static uint32_t bit32_range_set(uint32_t value, int start, int bits) { return value | MASK32_RANGE_1(start, bits); }

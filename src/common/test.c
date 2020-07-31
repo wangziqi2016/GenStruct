@@ -1,5 +1,5 @@
 
-#include <time.h>
+#include <math.h>
 #include "common.h"
 
 void test_sysexpect() {
@@ -340,6 +340,10 @@ void test_nextlog2() {
   assert(nextlog2_u64(65536UL) == 65536UL);
   assert(nextlog2_u64(0x7FFFFFFFFFFFFFFFUL) == 0x8000000000000000UL);
   assert(nextlog2_u64(0x8000000000000001UL) == 0UL); // Overflow
+  assert(nextlog2_32(0x80000001) == 0); // Should be 0
+  assert(nextlog2_32(0x7fffffff) < 0 && nextlog2_32(0x7fffffff) == (int32_t)0x80000000);
+  printf("%X\n", nextlog2_8(0x7f));
+  assert(nextlog2_8(0x7f) < 0 && nextlog2_8(0x7f) == (int8_t)0x80); // Should be 0x80
   // Random number test
   rand_init();
   for(int i = 0;i < 1000;i++) {
@@ -364,7 +368,7 @@ void test_rand() {
   memset(low_bits, 0x00, sizeof(low_bits));
   memset(mid_bits, 0x00, sizeof(mid_bits));
   rand_init();
-  for(int i = 0;i < 1000000;i++) {
+  for(int i = 0;i < 2000000;i++) {
     uint64_t num = rand_u64();
     high_bits[num >> 56]++;   // Highest 8 bits
     low_bits[num & 0xFFUL]++; // Lowest 8 bits
@@ -375,14 +379,25 @@ void test_rand() {
     high_total += high_bits[i];
     low_total += low_bits[i];
     mid_total += mid_bits[i];
+    //printf("%d ", high_bits[i]);
   }
+  //putchar('\n');
   double high_avg = high_total / 256.0;
   double low_avg = low_total / 256.0;
   double mid_avg = mid_total / 256.0;
   double high_dev = 0.0, low_dev = 0.0, mid_dev = 0.0;
   for(int i = 0;i < 256;i++) {
-    high_dev += () * ();
+    high_dev += (high_bits[i] - high_avg) * (high_bits[i] - high_avg);
+    low_dev += (low_bits[i] - low_avg) * (low_bits[i] - low_avg);
+    mid_dev += (mid_bits[i] - mid_avg) * (mid_bits[i] - mid_avg);
   }
+  high_dev = sqrt(high_dev / 256.0);
+  low_dev = sqrt(low_dev / 256.0);
+  mid_dev = sqrt(mid_dev / 256.0);
+  printf("High avg %lf dev %lf (%.2lf%%); Low %lf dev %lf (%.2lf%%); Mid %lf dev %lf (%.2lf%%)\n",
+    high_avg, high_dev, high_dev / high_avg * 100, 
+    low_avg, low_dev, low_dev / low_avg * 100, 
+    mid_avg, mid_dev, mid_dev / mid_avg * 100);
   TEST_PASS();
   return;
 }
