@@ -30,4 +30,7 @@ void btree_node_free(btree_node_t *node); // Recursively frees all nodes
 btree_t *btree_init();
 void btree_free(btree_t *btree);
 
+// Returns the index found, or the next larger element
+int btree_node_search_u64(btree_node_t *node, uint64_t key, void **value); 
+
 #endif

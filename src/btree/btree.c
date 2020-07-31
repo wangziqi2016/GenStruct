@@ -4,7 +4,7 @@
 btree_node_t *btree_node_init(int type) {
   assert(type == BTREE_NODE_INNER || type == BTREE_NODE_LEAF);
   int capacity = (type == BTREE_NODE_INNER) ? BTREE_INNER_CAPACITY : BTREE_LEAF_CAPACITY;
-  bttree_node_t *node = (btree_node_t *)malloc(sizeof(btree_node_t) + sizeof(btree_kv_t) * capacity);
+  btree_node_t *node = (btree_node_t *)malloc(sizeof(btree_node_t) + sizeof(btree_kv_t) * capacity);
   node->type = type;
   node->count = 0;
   SYSEXPECT(node != NULL);
@@ -33,4 +33,25 @@ void btree_free(btree_t *btree) {
   if(btree->root != NULL) btree_node_free(btree->root);
   free(btree);
   return;
+}
+
+// If found, return the index or the next larger index (could be end of array)
+// If exact match is found, value is set to the value; Otherwise value is NULL
+int btree_node_search_u64(btree_node_t *node, uint64_t key, void **value) {
+  // Invariant: start < end; Search in [start, end)
+  int start = 0, end = node->count;
+  while(start < end) {
+    int mid = (start + end) / 2;
+    if(key == node->kv[mid].key) {
+      *value = node->kv[mid].value;
+      return mid;
+    } else if(key < node->kv[mid].key) {
+      end = mid;
+    } else {
+      start = mid + 1;
+    }
+  }
+  *value = NULL;
+  assert(start == end);
+  return start;
 }
