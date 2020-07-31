@@ -23,7 +23,6 @@
 
 // Bit masks
 extern uint64_t mask64_1[65];
-extern uint64_t mask64_low_1[65];
 
 #define MASK64_1(index)    (mask64_1[index])
 // Note: This is wrong! The hardware shifter will first truncate "num" down to 6 bits before using it for shifting
@@ -35,15 +34,9 @@ extern uint64_t mask64_low_1[65];
 #define MASK64_RANGE_1(start, bits) (MASK64_LOW_1(bits) << start)  // [start, start + bits) are 1, otherwise 0
 #define MASK64_RANGE_0(start, bits) (~MASK64_RANGE_1(start, bits)) // [start, start + bits) are 0, otherwise 1
 
-// From 0 to 8, indexed by the number of bits
-extern uint8_t mask8_low_1[9];  
-extern uint8_t mask8_high_1[9];
-// Single bit masks
-extern uint8_t mask8_1[8];
-
-#define MASK8_1(index)    (mask8_1[index])   // Single bit 1 mask; Index of bit given in arg
-#define MASK8_LOW_1(num)  (MASK8_1(num) - 1) // All-one mask in lower bits; Number of 1 given in arg
-#define MASK64_HIGH_1(num) (~(MASK8_LOW_1(8 - num)))
+#define MASK8_1(index)    ((uint8_t)mask64_1[index])   // Single bit 1 mask; Index of bit given in arg
+#define MASK8_LOW_1(num)  (MASK8_1(num) - 1)           // All-one mask in lower bits; Number of 1 given in arg
+#define MASK8_HIGH_1(num) (~(MASK8_LOW_1(8 - num)))
 #define MASK8_LOW_0(num)  (~MASK8_LOW_1(num))
 #define MASK8_HIGH_0(num) (~MASK8_HIGH_1(num))
 #define MASK8_RANGE_1(start, bits) (MASK8_LOW_1(bits) << start) // [start, start + bits) are 1, otherwise 0
