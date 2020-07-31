@@ -5,22 +5,22 @@
 #define BTREE_INNER_CAPACITY 64
 #define BTREE_LEAF_CAPACITY  64
 
+#define BTREE_NODE_INNER     0
+#define BTREE_NODE_LEAF      1
+
 typedef struct {
-  int type;
-  int count;
-  void *key[BTREE_INNER_CAPACITY];
-  void *value[BTREE_INNER_CAPACITY];
-} btree_inner_t;
+  void *key;
+  void *value;
+} btree_kv_t;
 
 typedef struct {
   int type;
   int count;
-  void *key[BTREE_LEAF_CAPACITY];
-  void *value[BTREE_LEAF_CAPACITY];
-} btree_leaf_t;
+  btree_kv_t kv[0];
+} btree_node_t;
 
 typedef struct {
-
+  btree_node_t *root;
 } btree_t;
 
 #endif
