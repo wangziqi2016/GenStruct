@@ -10,3 +10,18 @@ btree_node_t *btree_node_init(int type) {
   SYSEXPECT(node != NULL);
   return node;
 }
+
+
+
+btree_t *btree_init() {
+  btree_t *btree = (btree_t *)malloc(sizeof(btree_t));
+  SYSEXPECT(btree != NULL);
+  memset(btree, 0x00, sizeof(btree_t));
+  return btree;
+}
+
+void btree_free(btree_t *btree) {
+  if(btree->root != NULL) btree_node_free(btree->root);
+  free(btree);
+  return;
+}

@@ -26,5 +26,8 @@ typedef struct {
 } btree_t;
 
 btree_node_t *btree_node_init(int type);
+void btree_node_free(btree_node_t *node); // Recursively frees all nodes
+btree_t *btree_init();
+void btree_free(btree_t *btree);
 
 #endif
