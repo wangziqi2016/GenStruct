@@ -67,12 +67,15 @@ void test_search() {
 }
 
 // Returns a populated leaf node with given number of random uint64_t key and value (key == value)
-btree_node_t *populate_leaf(btree_t *btree, int count) {
+// The optional keys array holds unsorted keys
+btree_node_t *populate_leaf(btree_t *btree, int count, uint64_t *keys) {
   if(btree->key_cmp_func != NULL) error_exit("Only supports uint64_t keys\n");
+  btree_node_t *node = btree_node_init(BTREE_NODE_LEAF);
+  int key_index = 0;
   rand_init();
   for(int i = 0;i < count;i++) {
     uint64_t key = rand_u64();
-    keys[key_index++] = key;
+    if(keys != NULL) keys[key_index++] = key;
     btree_node_insert(btree, node, (void *)key, (void *)key);
   }
   assert(node->count == count);
@@ -82,16 +85,8 @@ btree_node_t *populate_leaf(btree_t *btree, int count) {
 void test_insert() {
   TEST_BEGIN();
   btree_t *btree = btree_init();
-  btree_node_t *node = btree_node_init(BTREE_NODE_LEAF);
   uint64_t keys[BTREE_LEAF_CAPACITY];
-  int key_index = 0;
-  rand_init();
-  for(int i = 0;i < BTREE_LEAF_CAPACITY;i++) {
-    uint64_t key = rand_u64();
-    keys[key_index++] = key;
-    btree_node_insert(btree, node, (void *)key, (void *)key);
-  }
-  assert(node->count == BTREE_LEAF_CAPACITY);
+  btree_node_t *node = populate_leaf(btree, BTREE_LEAF_CAPACITY, keys);
   // Check that all values are in the node
   for(int i = 0;i < BTREE_LEAF_CAPACITY;i++) {
     int index;
@@ -109,6 +104,13 @@ void test_insert() {
 }
 
 void test_split() {
+  btree_t *btree = btree_init();
+  btree_node_t *node = populate_leaf(btree, BTREE_LEAF_CAPACITY, NULL);
+  btree_node_t *sibling = btree_node_split(node);
+
+  btree_node_free(node);
+  btree_node_free(sibling);
+  btree_free(btree);
   return;
 }
 
