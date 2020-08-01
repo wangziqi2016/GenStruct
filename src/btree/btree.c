@@ -142,6 +142,13 @@ btree_node_t *btree_next_level(btree_t *btree, btree_node_t *const node, void *k
     assert(index > 0 && index <= node->count);
     child = (btree_node_t *)node->kv[index - 1].value;
   }
-  
+  // Then check B-Link property to see whether there is an unfinished node split
+  assert(child->next == NULL || child->next->count > 0); // If not NULL then must be > 0
+  if(child->next != NULL) {
+    void *child_sibling_key = child->next->kv[0].key;
+    int larger = btree->key_cmp_func ? \
+      (btree->key_cmp_func(key, child_sibling_key) >= 0) : ((uint64_t)key >= (uint64_t)child_sibling_key);
+    
+  }
   return child;
 }
