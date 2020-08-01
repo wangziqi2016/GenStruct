@@ -38,7 +38,9 @@ void btree_free(btree_t *btree) {
 // If found, return 1, otherwise return 0
 // If exact match is found, index is set to the index of the item; Otherwise it is set
 // to the next largest item (which could point to the end of the array)
-int btree_node_search_u64(btree_node_t *node, uint64_t key, int *index) {
+int btree_node_search_u64(btree_node_t *node, void *key, int *index, btree_key_cmp_func_t key_cmp_func) {
+  assert(key_cmp_func == NULL);
+  uint64_t key = (uint64_t)_key;
   // Invariant: start < end; Search in [start, end)
   int start = 0, end = node->count;
   while(start < end) {
@@ -49,6 +51,28 @@ int btree_node_search_u64(btree_node_t *node, uint64_t key, int *index) {
     } else if(key < (uint64_t)node->kv[mid].key) {
       end = mid;
     } else {
+      start = mid + 1;
+    }
+  }
+  assert(start == end);
+  *index = start;
+  return 0;
+}
+
+// Generic search function using key call backs
+int btree_node_search(btree_node_t *node, void *key, int *index, btree_key_cmp_func_t key_cmp_func) {
+  assert(key_cmp_func != NULL);
+  int start = 0, end = node->count;
+  while(start < end) {
+    int mid = (start + end) / 2;
+    int cmp = key_cmp_func(key, node->kv[mid].key);
+    if(cmp == 0) {
+      *index = mid;
+      return 1;
+    } else if(cmp < 0) {
+      end = mid;
+    } else {
+      assert(cmp > 0);
       start = mid + 1;
     }
   }
