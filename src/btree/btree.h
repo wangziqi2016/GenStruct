@@ -45,4 +45,7 @@ int btree_node_search(btree_node_t *node, void *key, int *index, btree_key_cmp_f
 int btree_node_insert(btree_t *btree, btree_node_t *node, void *key, void *value);
 btree_node_t *btree_node_split(btree_node_t *node);
 
+// Traverse to the next level, given an inner node
+btree_node_t *btree_next_level(btree_t *btree, btree_node_t *const node, void *key);
+
 #endif

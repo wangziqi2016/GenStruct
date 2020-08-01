@@ -127,3 +127,21 @@ btree_node_t *btree_node_split(btree_node_t *node) {
   node->next = sibling;
   return sibling;
 }
+
+// This function assumes that the given inner node is already the correct node to be used
+btree_node_t *btree_next_level(btree_t *btree, btree_node_t *const node, void *key) {
+  assert(node->type == BTREE_NODE_INNER);
+  int index;
+  int found = btree->search_func(node, key, &index, btree->key_cmp_func);
+  btree_node_t *child;
+  if(found == 1) {
+    assert(index >= 0 && index < node->count);
+    child = (btree_node_t *)node->kv[index].value;
+  } else {
+    // Note that in this case it is impossible to get the first element
+    assert(index > 0 && index <= node->count);
+    child = (btree_node_t *)node->kv[index - 1].value;
+  }
+  
+  return child;
+}
