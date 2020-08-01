@@ -66,6 +66,19 @@ void test_search() {
   return;
 }
 
+// Returns a populated leaf node with given number of random uint64_t key and value (key == value)
+btree_node_t *populate_leaf(btree_t *btree, int count) {
+  if(btree->key_cmp_func != NULL) error_exit("Only supports uint64_t keys\n");
+  rand_init();
+  for(int i = 0;i < count;i++) {
+    uint64_t key = rand_u64();
+    keys[key_index++] = key;
+    btree_node_insert(btree, node, (void *)key, (void *)key);
+  }
+  assert(node->count == count);
+  return node;
+}
+
 void test_insert() {
   TEST_BEGIN();
   btree_t *btree = btree_init();
@@ -95,8 +108,13 @@ void test_insert() {
   return;
 }
 
+void test_split() {
+  return;
+}
+
 int main() {
   test_search();
   test_insert();
+  test_split();
   return 0;
 }
