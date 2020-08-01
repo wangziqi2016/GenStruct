@@ -61,11 +61,42 @@ void test_search() {
     }
   }
   printf("Found %d Not Found %d\n", exist_count, rand_iter - exist_count);
+  btree_node_free(node);
+  TEST_PASS();
+  return;
+}
+
+void test_insert() {
+  TEST_BEGIN();
+  btree_t *btree = btree_init();
+  btree_node_t *node = btree_node_init(BTREE_NODE_LEAF);
+  uint64_t keys[BTREE_LEAF_CAPACITY];
+  int key_index = 0;
+  rand_init();
+  for(int i = 0;i < BTREE_LEAF_CAPACITY;i++) {
+    uint64_t key = rand_u64();
+    keys[key_index++] = key;
+    btree_node_insert(btree, node, (void *)key, (void *)key);
+  }
+  assert(node->count == BTREE_LEAF_CAPACITY);
+  // Check that all values are in the node
+  for(int i = 0;i < BTREE_LEAF_CAPACITY;i++) {
+    int index;
+    int found = btree_node_search_u64(node, (void *)keys[i], &index, NULL);
+    assert(found == 1 && index >= 0 && index < node->count);
+  }
+  // Check that the node is ordered
+  for(int i = 0;i < BTREE_LEAF_CAPACITY - 1;i++) {
+    assert((uint64_t)node->kv[i].key < (uint64_t)node->kv[i + 1].key);
+  }
+  btree_node_free(node);
+  btree_free(btree);
   TEST_PASS();
   return;
 }
 
 int main() {
   test_search();
+  test_insert();
   return 0;
 }
