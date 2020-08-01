@@ -104,13 +104,27 @@ void test_insert() {
 }
 
 void test_split() {
+  TEST_BEGIN();
   btree_t *btree = btree_init();
-  btree_node_t *node = populate_leaf(btree, BTREE_LEAF_CAPACITY, NULL);
+  uint64_t keys[BTREE_LEAF_CAPACITY];
+  btree_node_t *node = populate_leaf(btree, BTREE_LEAF_CAPACITY, keys);
   btree_node_t *sibling = btree_node_split(node);
-
+  assert(node->count + sibling->count == BTREE_LEAF_CAPACITY);
+  assert((uint64_t)node->kv[node->count - 1].key < (uint64_t)sibling->kv[0].key);
+  for(int i = 0;i < node->count - 1;i++) assert((uint64_t)node->kv[i].key < (uint64_t)node->kv[i + 1].key);
+  for(int i = 0;i < sibling->count - 1;i++) assert((uint64_t)sibling->kv[i].key < (uint64_t)sibling->kv[i + 1].key);
+  for(int i = 0;i < BTREE_LEAF_CAPACITY;i++) {
+    uint64_t key = keys[i];
+    int index1, index2;
+    int found1, found2;
+    found1 = btree_node_search_u64(node, (void *)key, &index1, NULL); 
+    found2 = btree_node_search_u64(sibling, (void *)key, &index2, NULL); 
+    assert((found1 ^ found2) == 1);
+  }
   btree_node_free(node);
   btree_node_free(sibling);
   btree_free(btree);
+  TEST_PASS();
   return;
 }
 
