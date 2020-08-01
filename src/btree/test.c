@@ -108,8 +108,11 @@ void test_split() {
   btree_t *btree = btree_init();
   uint64_t keys[BTREE_LEAF_CAPACITY];
   btree_node_t *node = populate_leaf(btree, BTREE_LEAF_CAPACITY, keys);
+  node->next = node; // We test the non-trivial case
   btree_node_t *sibling = btree_node_split(node);
   assert(node->count + sibling->count == BTREE_LEAF_CAPACITY);
+  assert(node->next == sibling);
+  assert(sibling->next == node); // Special arrangement, see above
   assert((uint64_t)node->kv[node->count - 1].key < (uint64_t)sibling->kv[0].key);
   for(int i = 0;i < node->count - 1;i++) assert((uint64_t)node->kv[i].key < (uint64_t)node->kv[i + 1].key);
   for(int i = 0;i < sibling->count - 1;i++) assert((uint64_t)sibling->kv[i].key < (uint64_t)sibling->kv[i + 1].key);
