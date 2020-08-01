@@ -98,14 +98,13 @@ int btree_node_insert(btree_t *btree, btree_node_t *node, void *key, void *value
   int index;
   int found = btree->search_func(node, key, &index, btree->key_cmp_func);
   if(found == 1) return 0;
-  assert(found == 0);
+  assert(found == 0 && index <= node->count && index >= 0);
   // Easy case: just append at the end
-  if(index == node->count) {
-    node->kv[node->count].key = key;
-    node->kv[node->count].value = value; 
-  } else {
-    memmove(node->kv + index + 1, node->kv + index, (node->count - index) * sizeof(btree_kv_t));
+  if(index < node->count) {
+    memmove(node->kv + index + 1, node->kv + index, (node->count - index) * sizeof(btree_kv_t));  
   }
+  node->kv[index].key = key;
+  node->kv[index].value = value; 
   node->count++;
   return 1;
 }
