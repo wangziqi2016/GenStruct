@@ -109,3 +109,14 @@ int btree_node_insert(btree_t *btree, btree_node_t *node, void *key, void *value
   return 1;
 }
 
+btree_node_t *btree_node_split(btree_node_t *node) {
+  assert(node->count > 1);
+  // Split node into [0, mid) and [mid, count)
+  int mid = node->count / 2;
+  btree_node_t *sibling = btree_node_init(node->type);
+  assert(sibling->type == node->type);
+  memcpy(sibling->kv, node->kv + mid, (node->count - mid) * sizeof(btree_kv_t));
+  sibling->count = node->count - mid;
+  node->count = mid;
+  return sibling;
+}
