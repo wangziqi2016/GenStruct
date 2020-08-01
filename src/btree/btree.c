@@ -26,6 +26,15 @@ btree_t *btree_init() {
   btree_t *btree = (btree_t *)malloc(sizeof(btree_t));
   SYSEXPECT(btree != NULL);
   memset(btree, 0x00, sizeof(btree_t));
+  btree->search_func = btree_node_search_u64;
+  return btree;
+}
+
+btree_t *btree_init_custom_key(btree_key_cmp_func_t key_cmp_func) {
+  if(key_cmp_func == NULL) error_exit("The key comparison function must not be NULL\n");
+  btree_t *btree = btree_init();
+  btree->key_cmp_func = key_cmp_func;
+  btree->search_func = btree_node_search;
   return btree;
 }
 
