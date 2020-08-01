@@ -27,14 +27,14 @@ void test_search() {
   for(int i = 0;i < BTREE_LEAF_CAPACITY - 1;i++) {
     uint64_t key = (uint64_t)node->kv[i].key;
     int index;
-    int found = btree_node_search_u64(node, key, &index);
+    int found = btree_node_search_u64(node, (void *)key, &index, NULL);
     assert(found == 1 && index == i);
     assert(key == (uint64_t)node->kv[i].key);
     assert(key == (uint64_t)node->kv[i].value);
   }
   // Test random keys (most likely not found)
   int exist_count = 0;
-  const rand_iter = 100000;
+  const int rand_iter = 100000;
   for(int i = 0;i < rand_iter;i++) {
     uint64_t key = rand_u64();
     int exist = 0;
@@ -47,7 +47,7 @@ void test_search() {
       } 
     }
     int index;
-    int found = btree_node_search_u64(node, key, &index);
+    int found = btree_node_search_u64(node, (void *)key, &index, NULL);
     if(exist == 1) {
       assert(found == 1 && exist_index == index);
       exist_count++;
@@ -60,7 +60,7 @@ void test_search() {
       if(index < BTREE_LEAF_CAPACITY) assert(key < (uint64_t)node->kv[index].key);
     }
   }
-  printf("Found %d Not Found %d\n", exist, rand_iter - exist);
+  printf("Found %d Not Found %d\n", exist_count, rand_iter - exist_count);
   TEST_PASS();
   return;
 }

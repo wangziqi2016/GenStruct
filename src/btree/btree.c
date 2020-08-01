@@ -38,7 +38,7 @@ void btree_free(btree_t *btree) {
 // If found, return 1, otherwise return 0
 // If exact match is found, index is set to the index of the item; Otherwise it is set
 // to the next largest item (which could point to the end of the array)
-int btree_node_search_u64(btree_node_t *node, void *key, int *index, btree_key_cmp_func_t key_cmp_func) {
+int btree_node_search_u64(btree_node_t *node, void *_key, int *index, btree_key_cmp_func_t key_cmp_func) {
   assert(key_cmp_func == NULL);
   uint64_t key = (uint64_t)_key;
   // Invariant: start < end; Search in [start, end)
