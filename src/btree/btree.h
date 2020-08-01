@@ -15,9 +15,10 @@ typedef struct {
   void *value;
 } btree_kv_t;
 
-typedef struct {
+typedef struct btree_node_struct_t {
   int type;
   int count;
+  struct btree_node_struct_t *next; // We use the b-link design
   btree_kv_t kv[0];
 } btree_node_t;
 

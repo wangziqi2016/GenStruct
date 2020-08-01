@@ -7,6 +7,7 @@ btree_node_t *btree_node_init(int type) {
   btree_node_t *node = (btree_node_t *)malloc(sizeof(btree_node_t) + sizeof(btree_kv_t) * capacity);
   node->type = type;
   node->count = 0;
+  node->next = NULL;
   SYSEXPECT(node != NULL);
   return node;
 }
@@ -109,6 +110,8 @@ int btree_node_insert(btree_t *btree, btree_node_t *node, void *key, void *value
   return 1;
 }
 
+// The sibling node contains half of the larger key array in the original node
+// The next pointer field of the sibling and the original node is updated accordingly
 btree_node_t *btree_node_split(btree_node_t *node) {
   assert(node->count > 1);
   // Split node into [0, mid) and [mid, count)
@@ -116,7 +119,11 @@ btree_node_t *btree_node_split(btree_node_t *node) {
   btree_node_t *sibling = btree_node_init(node->type);
   assert(sibling->type == node->type);
   memcpy(sibling->kv, node->kv + mid, (node->count - mid) * sizeof(btree_kv_t));
+  // Update element count
   sibling->count = node->count - mid;
   node->count = mid;
+  // Update next pointer field
+  sibling->next = node->next;
+  node->next = sibling;
   return sibling;
 }
