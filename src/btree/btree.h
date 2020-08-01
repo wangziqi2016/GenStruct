@@ -41,4 +41,6 @@ void btree_free(btree_t *btree);
 int btree_node_search_u64(btree_node_t *node, void *key, int *index, btree_key_cmp_func_t key_cmp_func);
 int btree_node_search(btree_node_t *node, void *key, int *index, btree_key_cmp_func_t key_cmp_func);
 
+int btree_node_insert(btree_t *btree, btree_node_t *node, void *key, void *value);
+
 #endif
