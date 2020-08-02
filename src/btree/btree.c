@@ -222,3 +222,12 @@ int btree_search(btree_t *btree, void *key, void **value) {
   *value = node->kv[index].value;
   return 1;
 }
+
+btree_it_t btree_it_begin(btree_t *btree, void *key) {
+  btree_node_t *node = btree_traverse(btree, key);
+  assert(node->type == BTREE_NODE_LEAF && node->count <= BTREE_LEAF_CAPACITY);
+  int index;
+  btree->search_func(node, key, &index, btree->key_cmp_func);
+  btree_it_t it = {btree, node, index};
+  return it;
+}
