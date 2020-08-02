@@ -223,7 +223,16 @@ void test_btree_it() {
   qsort(keys, iter, sizeof(uint64_t), cmp_u64);
   for(int i = 0;i < 100;i++) {
     uint64_t it_key = rand_u64();
-    btree_it_t it = btree_it_begin(btree, (uint64_t)it_key);
+    btree_it_t it = btree_it_begin(btree, (void *)it_key);
+    int index = bin_search(keys, iter, it_key);
+    while(btree_it_isend(&it) == 0) {
+      assert(btree_it_key(&it) == btree_it_value(&it));
+      assert(btree_it_key(&it) == keys[index]);
+      btree_it_next(&it);
+      assert(index < iter);
+      index++;
+    }
+    assert(index == iter);
   }
   TEST_PASS();
   return;
