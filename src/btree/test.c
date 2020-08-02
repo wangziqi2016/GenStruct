@@ -144,13 +144,10 @@ static int cmp_u64(const void *_n1, const void *_n2) {
   else return 1; 
 }
 
-void test_btree_insert() {
-  TEST_BEGIN();
+// Returns a populated tree filled with random values
+btree_t *populate_tree(int iter, uint64_t *keys) {
   btree_t *btree = btree_init();
   rand_init();
-  const int iter = 1000000;
-  uint64_t *keys = malloc(iter * sizeof(uint64_t));
-  SYSEXPECT(keys != NULL);
   int key_index = 0;
   for(int i = 0;i < iter;i++) {
     uint64_t key = rand_u64();
@@ -158,6 +155,15 @@ void test_btree_insert() {
     int ret = btree_insert(btree, (void *)key, (void *)key);
     assert(ret == 1);
   }
+  return btree;
+}
+
+void test_btree_insert() {
+  TEST_BEGIN();
+  const int iter = 1000000;
+  uint64_t *keys = malloc(iter * sizeof(uint64_t));
+  SYSEXPECT(keys != NULL);
+  btree_t *btree = populate_tree(iter, keys);
   for(int i = 0;i < iter;i++) {
     uint64_t value;
     int found = btree_search(btree, (void *)keys[i], (void **)&value);
