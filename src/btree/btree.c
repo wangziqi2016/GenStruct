@@ -55,7 +55,8 @@ int btree_node_search_u64(btree_node_t *node, void *_key, int *index, btree_key_
   assert(key_cmp_func == NULL);
   uint64_t key = (uint64_t)_key;
   // Invariant: start < end; Search in [start, end)
-  int start = 0, end = node->count;
+  // Inner nodes do not use the first element, since there is no fixed low key
+  int start = (node->type == BTREE_NODE_INNER) ? 1 : 0, end = node->count;
   while(start < end) {
     int mid = (start + end) / 2;
     if(key == (uint64_t)node->kv[mid].key) {
@@ -67,15 +68,16 @@ int btree_node_search_u64(btree_node_t *node, void *_key, int *index, btree_key_
       start = mid + 1;
     }
   }
-  assert(start == end);
-  *index = start;
+  assert(start == end || (start == 1 && end == 0));
+  *index = end;
   return 0;
 }
 
 // Generic search function using key call backs
 int btree_node_search(btree_node_t *node, void *key, int *index, btree_key_cmp_func_t key_cmp_func) {
   assert(key_cmp_func != NULL);
-  int start = 0, end = node->count;
+  if(node->count == 0) { *index = 0; return 0; }
+  int start = (node->type == BTREE_NODE_INNER) ? 1 : 0, end = node->count;
   while(start < end) {
     int mid = (start + end) / 2;
     int cmp = key_cmp_func(key, node->kv[mid].key);
@@ -89,8 +91,8 @@ int btree_node_search(btree_node_t *node, void *key, int *index, btree_key_cmp_f
       start = mid + 1;
     }
   }
-  assert(start == end);
-  *index = start;
+  assert(start == end || (start == 1 && end == 0));
+  *index = end;
   return 0;
 }
 
@@ -182,7 +184,8 @@ btree_node_t *btree_traverse(btree_t *btree, void *key) {
     curr = btree_next_level(btree, curr, key);
   }
   assert(curr->type == BTREE_NODE_LEAF);
-  assert(btree_key_less(btree, key, curr->kv[0].key) == 0);
+  // Note: The low key of the first leaf is -inf, so we should not check this
+  //assert(btree_key_less(btree, key, curr->kv[0].key) == 0);
   assert(curr->next == NULL || curr->next->count == 0 || btree_key_less(btree, key, curr->next->kv[0].key));
   return curr;
 }
@@ -208,4 +211,14 @@ int btree_insert(btree_t *btree, void *key, void *value) {
     btree_node_insert(btree, btree->root, sibling->kv[0].key, sibling);
   }
   return ret;
+}
+
+int btree_search(btree_t *btree, void *key, void **value) {
+  btree_node_t *node = btree_traverse(btree, key);
+  assert(node->type == BTREE_NODE_LEAF && node->count <= BTREE_LEAF_CAPACITY);
+  int index;
+  int found = btree->search_func(node, key, &index, btree->key_cmp_func);
+  if(found == 0) return 0;
+  *value = node->kv[index].value;
+  return 1;
 }

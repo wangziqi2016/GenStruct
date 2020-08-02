@@ -54,5 +54,6 @@ btree_node_t *btree_next_level(btree_t *btree, btree_node_t *const node, void *k
 // Traverse to leaf level node that the key falls in
 btree_node_t *btree_traverse(btree_t *btree, void *key);
 int btree_insert(btree_t *btree, void *key, void *value);
+int btree_search(btree_t *btree, void *key, void **value);
 
 #endif
