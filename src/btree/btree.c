@@ -151,7 +151,7 @@ btree_node_t *btree_next_level(btree_t *btree, btree_node_t *const node, void *k
   if(child->next != NULL) {
     void *child_sibling_key = child->next->kv[0].key;
     // There is indeed an unfinished node split, finish it by inserting into the current level
-    if(btree_key_less(key, child_sibling_key) == 0) {
+    if(btree_key_less(btree, key, child_sibling_key) == 0) {
       b_link = 1;
       // If the current node is not large enough, then split it and that's all
       // The B-Link design ensures that the next thread seeing this will help along
@@ -159,7 +159,7 @@ btree_node_t *btree_next_level(btree_t *btree, btree_node_t *const node, void *k
         btree_node_insert(btree, node, child_sibling_key, child->next);
       } else {
         btree_node_t *sibling = btree_node_split(node);
-        if(btree_key_less(child_sibling_key, sibling->kv[0].key)) {
+        if(btree_key_less(btree, child_sibling_key, sibling->kv[0].key)) {
           btree_node_insert(btree, node, child_sibling_key, child->next);
         } else {
           btree_node_insert(btree, sibling, child_sibling_key, child->next);
@@ -185,4 +185,27 @@ btree_node_t *btree_traverse(btree_t *btree, void *key) {
   assert(key_less(key, curr->kv[0].key) == 0);
   assert(curr->next == NULL || curr->next->count == 0 || key_less(key, curr->next->kv[0].key));
   return curr;
+}
+
+// Returns 1 if insertion succeeds, 0 otherwise
+int btree_insert(btree_t *btree, void *key, void *value) {
+  btree_node_t *node = btree_traverse(btree, key);
+  assert(node->type == BTREE_NODE_LEAF && node->count <= BTREE_LEAF_CAPACITY);
+  // Easy case: Just insert when the leaf is not full
+  if(node->count != BTREE_LEAF_CAPACITY) {
+    return btree_node_insert(btree, node, key, value);
+  }
+  btree_node_t *sibling = btree_node_split(node);
+  int ret;
+  if(btree_key_less(btree, key, sibling->kv[0].key)) {
+    ret = btree_node_insert(btree, node, key, value);
+  } else {
+    ret = btree_node_insert(btree, sibling, key, value);
+  }
+  if(btree->root == node) {
+    btree->root = btree_node_init(BTREE_NODE_INNER);
+    btree_node_insert(btree, btree->root, node->kv[0].key, node);
+    btree_node_insert(btree, btree->root, sibling->kv[0].key, sibling);
+  }
+  return ret;
 }
