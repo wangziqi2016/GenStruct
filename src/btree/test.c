@@ -148,7 +148,7 @@ void test_btree_insert() {
   TEST_BEGIN();
   btree_t *btree = btree_init();
   rand_init();
-  const int iter = 100000;
+  const int iter = 1000000;
   uint64_t *keys = malloc(iter * sizeof(uint64_t));
   SYSEXPECT(keys != NULL);
   int key_index = 0;
@@ -169,16 +169,23 @@ void test_btree_insert() {
   }
   // Check sorted property
   btree_node_t *leaf = btree->first_leaf;
+  int leaf_count = 0;
+  int element_count = 0;
   int leaf_index = 0;
   for(int i = 0;i < iter;i++) {
     while(leaf_index == leaf->count) {
       leaf = leaf->next;
       leaf_index = 0;
+      leaf_count++;
     }
+    element_count++;
     assert(leaf != NULL);
     assert(keys[i] == (uint64_t)leaf->kv[leaf_index].key);
     leaf_index++;
   }
+  assert(leaf_index == leaf->count && leaf->next == NULL);
+  printf("Leafs %d elements %d occupancy %lf (CAP %d)\n", 
+    leaf_count, element_count, (double)element_count / leaf_count, BTREE_LEAF_CAPACITY);
   free(keys);
   btree_free(btree);
   TEST_PASS();
