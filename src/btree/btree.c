@@ -229,5 +229,8 @@ btree_it_t btree_it_begin(btree_t *btree, void *key) {
   int index;
   btree->search_func(node, key, &index, btree->key_cmp_func);
   btree_it_t it = {btree, node, index};
+  // Make sure that we do not stop past the end of the current node
+  // Always do a next() operation if so, and this operation would always be valid
+  if(index == node->count) btree_it_next(&it);
   return it;
 }

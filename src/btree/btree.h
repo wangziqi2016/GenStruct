@@ -64,12 +64,12 @@ typedef struct {
 
 // Returns an it that points to key or the next element larger than key
 btree_it_t btree_it_begin(btree_t *btree, void *key);
-inline static int btree_it_isend(btree_it_t *it) { return it->curr->next == NULL && it->index == it->curr->count; }
+inline static int btree_it_isend(btree_it_t *it) { return it->curr == NULL; }
 inline static void btree_it_next(btree_it_t *it) { 
-  if(it->index < it->curr->count) { 
-    it->index++; 
+  if(it->index >= it->curr->count - 1) { // Could be equal or larger, since search() may return past the end pos
+    it->index = 0; it->curr = it->curr->next; // This may result in it->curr == NULL
   } else { 
-    it->index = 0; it->curr = it->curr->next; 
+    it->index++; 
   } 
 }
 inline static void *btree_it_key(btree_it_t *it) { return it->curr->kv[it->index].key; }
