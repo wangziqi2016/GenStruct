@@ -138,7 +138,7 @@ void test_split() {
 }
 
 static int cmp_u64(const void *_n1, const void *_n2) { 
-  uint64_t n1 = (uint64_t)_n1; uint64_t n2 = (uint64_t)_n2;
+  uint64_t n1 = *(uint64_t *)_n1; uint64_t n2 = *(uint64_t *)_n2;
   if(n1 < n2) return -1; 
   else if(n1 == n2) return 0; 
   else return 1; 
@@ -164,10 +164,20 @@ void test_btree_insert() {
     assert(found == 1 && value == keys[i]);
   }
   qsort(keys, iter, sizeof(uint64_t), cmp_u64);
+  for(int i = 0;i < iter - 1;i++) {
+    assert(keys[i] < keys[i + 1]);
+  }
+  // Check sorted property
+  btree_node_t *leaf = btree->first_leaf;
+  int leaf_index = 0;
   for(int i = 0;i < iter;i++) {
-    uint64_t value;
-    int found = btree_search(btree, (void *)keys[i], (void **)&value);
-    assert(found == 1 && value == keys[i]);
+    while(leaf_index == leaf->count) {
+      leaf = leaf->next;
+      leaf_index = 0;
+    }
+    assert(leaf != NULL);
+    assert(keys[i] == (uint64_t)leaf->kv[leaf_index].key);
+    leaf_index++;
   }
   free(keys);
   btree_free(btree);
