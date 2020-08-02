@@ -47,5 +47,7 @@ btree_node_t *btree_node_split(btree_node_t *node);
 
 // Traverse to the next level, given an inner node
 btree_node_t *btree_next_level(btree_t *btree, btree_node_t *const node, void *key);
+// Traverse to leaf level node that the key falls in
+btree_node_t *btree_traverse(btree_t *btree, void *key);
 
 #endif

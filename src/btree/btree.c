@@ -27,7 +27,10 @@ btree_t *btree_init() {
   btree_t *btree = (btree_t *)malloc(sizeof(btree_t));
   SYSEXPECT(btree != NULL);
   memset(btree, 0x00, sizeof(btree_t));
+  btree->key_cmp_func = NULL;
   btree->search_func = btree_node_search_u64;
+  // Use an empty leaf node as initial state
+  btree->root = btree_node_init(BTREE_NODE_LEAF);
   return btree;
 }
 
@@ -164,6 +167,12 @@ btree_node_t *btree_next_level(btree_t *btree, btree_node_t *const node, void *k
           ((uint64_t)child_sibling_key >= (uint64_t)sibling_key);
         if(insert_right) btree_node_insert(btree, sibling, child_sibling_key, child->next);
         else btree_node_insert(btree, node, child_sibling_key, child->next);
+        // Root must not observe B-Links
+        if(btree->root == node) {
+          btree->root = btree_node_init(BTREE_NODE_INNER);
+          btree_node_insert(btree, btree->root, node->kv[0].key, node);
+          btree_node_insert(btree, btree->root, sibling_key, sibling);
+        }
       } 
     }
   }
