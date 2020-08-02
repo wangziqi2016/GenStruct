@@ -137,9 +137,23 @@ void test_split() {
   return;
 }
 
+void test_btree_insert() {
+  TEST_BEGIN();
+  btree_t *btree = btree_init();
+  rand_init();
+  for(int i = 0;i < 100000;i++) {
+    int ret = btree_insert(btree, (void *)rand_u64(), (void *)rand_u64());
+    assert(ret == 1);
+  }
+  btree_free(btree);
+  TEST_PASS();
+  return;
+}
+
 int main() {
   test_search();
   test_insert();
   test_split();
+  test_btree_insert();
   return 0;
 }
