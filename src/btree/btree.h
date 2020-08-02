@@ -45,6 +45,10 @@ int btree_node_search(btree_node_t *node, void *key, int *index, btree_key_cmp_f
 int btree_node_insert(btree_t *btree, btree_node_t *node, void *key, void *value);
 btree_node_t *btree_node_split(btree_node_t *node);
 
+inline static int btree_key_less(btree_t *btree, void *key1, void *key2) {
+  btree->key_cmp_func ? (btree->key_cmp_func(key1, key2) < 0) : ((uint64_t)key1 < (uint64_t)key2);
+}
+
 // Traverse to the next level, given an inner node
 btree_node_t *btree_next_level(btree_t *btree, btree_node_t *const node, void *key);
 // Traverse to leaf level node that the key falls in
