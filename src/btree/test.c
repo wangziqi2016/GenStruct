@@ -141,10 +141,20 @@ void test_btree_insert() {
   TEST_BEGIN();
   btree_t *btree = btree_init();
   rand_init();
-  for(int i = 0;i < 100000;i++) {
-    int ret = btree_insert(btree, (void *)rand_u64(), (void *)rand_u64());
+  const int iter = 100000;
+  uint64_t *keys = malloc(iter * sizeof(uint64_t));
+  SYSEXPECT(keys != NULL);
+  int key_index = 0;
+  for(int i = 0;i < iter;i++) {
+    uint64_t key = rand_u64();
+    keys[key_index++] = key;
+    int ret = btree_insert(btree, (void *)key, (void *)key);
     assert(ret == 1);
   }
+  for(int i = 0;i < iter;i++) {
+    
+  }
+  free(keys);
   btree_free(btree);
   TEST_PASS();
   return;
