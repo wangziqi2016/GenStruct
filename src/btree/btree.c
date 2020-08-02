@@ -150,23 +150,20 @@ btree_node_t *btree_next_level(btree_t *btree, btree_node_t *const node, void *k
   int b_link = 0;
   if(child->next != NULL) {
     void *child_sibling_key = child->next->kv[0].key;
-    b_link = btree->key_cmp_func ? \
-      (btree->key_cmp_func(key, child_sibling_key) >= 0) : ((uint64_t)key >= (uint64_t)child_sibling_key);
     // There is indeed an unfinished node split, finish it by inserting into the current level
-    if(b_link) {
+    if(btree_key_less(key, child_sibling_key) == 0) {
+      b_link = 1;
       // If the current node is not large enough, then split it and that's all
       // The B-Link design ensures that the next thread seeing this will help along
       if(node->count < BTREE_INNER_CAPACITY) {
         btree_node_insert(btree, node, child_sibling_key, child->next);
       } else {
         btree_node_t *sibling = btree_node_split(node);
-        void *sibling_key = sibling->kv[0].key;
-        // Whether to insert into the sibling node or not
-        int insert_right = btree->key_cmp_func ? \
-          (btree->key_cmp_func(child_sibling_key, sibling_key) >= 0) : \
-          ((uint64_t)child_sibling_key >= (uint64_t)sibling_key);
-        if(insert_right) btree_node_insert(btree, sibling, child_sibling_key, child->next);
-        else btree_node_insert(btree, node, child_sibling_key, child->next);
+        if(btree_key_less(child_sibling_key, sibling->kv[0].key)) {
+          btree_node_insert(btree, node, child_sibling_key, child->next);
+        } else {
+          btree_node_insert(btree, sibling, child_sibling_key, child->next);
+        }
         // Root must not observe B-Links
         if(btree->root == node) {
           btree->root = btree_node_init(BTREE_NODE_INNER);
@@ -177,4 +174,15 @@ btree_node_t *btree_next_level(btree_t *btree, btree_node_t *const node, void *k
     }
   }
   return b_link ? child->next : child;
+}
+
+btree_node_t *btree_traverse(btree_t *btree, void *key) {
+  btree_node_t *curr = btree->root;
+  while(curr->type == BTREE_NODE_INNER) {
+    curr = btree_next_level(btree, curr, key);
+  }
+  assert(curr->type == BTREE_NODE_LEAF);
+  assert(key_less(key, curr->kv[0].key) == 0);
+  assert(curr->next == NULL || curr->next->count == 0 || key_less(key, curr->next->kv[0].key));
+  return curr;
 }
