@@ -198,8 +198,20 @@ void test_btree_insert() {
   return;
 }
 
-static int bin_search(uint64_t *array, uint64_t key) {
-  
+static int bin_search(uint64_t *array, int count, uint64_t key) {
+  int start = 0, end = count;
+  while(start < end) {
+    int mid = (start + end) / 2;
+    if(key == array[mid]) {
+      return mid;
+    } else if(key < array[mid]) {
+      end = mid;
+    } else {
+      start = mid + 1;
+    }
+  }
+  assert(start == end);
+  return start;
 }
 
 void test_btree_it() {
