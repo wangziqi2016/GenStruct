@@ -168,7 +168,7 @@ btree_node_t *btree_next_level(btree_t *btree, btree_node_t *const node, void *k
         if(btree->root == node) {
           btree->root = btree_node_init(BTREE_NODE_INNER);
           btree_node_insert(btree, btree->root, node->kv[0].key, node);
-          btree_node_insert(btree, btree->root, sibling_key, sibling);
+          btree_node_insert(btree, btree->root, sibling->kv[0].key, sibling);
         }
       } 
     }
@@ -182,8 +182,8 @@ btree_node_t *btree_traverse(btree_t *btree, void *key) {
     curr = btree_next_level(btree, curr, key);
   }
   assert(curr->type == BTREE_NODE_LEAF);
-  assert(key_less(key, curr->kv[0].key) == 0);
-  assert(curr->next == NULL || curr->next->count == 0 || key_less(key, curr->next->kv[0].key));
+  assert(btree_key_less(btree, key, curr->kv[0].key) == 0);
+  assert(curr->next == NULL || curr->next->count == 0 || btree_key_less(btree, key, curr->next->kv[0].key));
   return curr;
 }
 
