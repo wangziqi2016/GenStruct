@@ -227,7 +227,7 @@ void test_btree_it() {
     int index = bin_search(keys, iter, it_key);
     while(btree_it_isend(&it) == 0) {
       assert(btree_it_key(&it) == btree_it_value(&it));
-      assert(btree_it_key(&it) == keys[index]);
+      assert((uint64_t)btree_it_key(&it) == keys[index]);
       btree_it_next(&it);
       assert(index < iter);
       index++;
