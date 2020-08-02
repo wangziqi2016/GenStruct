@@ -27,7 +27,7 @@ typedef int (*btree_key_cmp_func_t)(void *key1, void *key2);
 typedef int (*btree_node_search_func_t)(btree_node_t *node, void *key, int *index, btree_key_cmp_func_t key_cmp_func);
 
 typedef struct {
-  btree_node_t *root;
+  btree_node_t *root, *first_leaf;
   btree_key_cmp_func_t key_cmp_func;    // Set to NULL if using uint64_t as key
   btree_node_search_func_t search_func; // Set to either uint64_t search or customized key search
 } btree_t;

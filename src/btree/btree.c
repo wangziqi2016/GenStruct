@@ -30,7 +30,7 @@ btree_t *btree_init() {
   btree->key_cmp_func = NULL;
   btree->search_func = btree_node_search_u64;
   // Use an empty leaf node as initial state
-  btree->root = btree_node_init(BTREE_NODE_LEAF);
+  btree->root = btree->first_leaf = btree_node_init(BTREE_NODE_LEAF);
   return btree;
 }
 
