@@ -62,6 +62,16 @@ typedef struct {
   int index;          // The index in the leaf node
 } btree_it_t;
 
-
+btree_it_t btree_it_begin(void *key);
+inline static int btree_it_isend(btree_it_t *it) { return it->curr->next == NULL && it->index == it->curr->count; }
+inline static void btree_it_next(btree_it_t *it) { 
+  if(it->index < it->curr->count) { 
+    it->index++; 
+  } else { 
+    it->index = 0; it->curr = it->curr->next 
+  } 
+}
+inline static void *btree_it_key(btree_it_t *it) { return it->curr->kv[it->index].key; }
+inline static void *btree_it_value(btree_it_t *it) { return it->curr->kv[it->index].value; }
 
 #endif
