@@ -198,10 +198,30 @@ void test_btree_insert() {
   return;
 }
 
+static int bin_search(uint64_t *array, uint64_t key) {
+  
+}
+
+void test_btree_it() {
+  TEST_BEGIN();
+  const int iter = 100000;
+  uint64_t *keys = malloc(iter * sizeof(uint64_t));
+  SYSEXPECT(keys != NULL);
+  btree_t *btree = populate_tree(iter, keys);
+  qsort(keys, iter, sizeof(uint64_t), cmp_u64);
+  for(int i = 0;i < 100;i++) {
+    uint64_t it_key = rand_u64();
+    btree_it_t it = btree_it_begin(btree, (uint64_t)it_key);
+  }
+  TEST_PASS();
+  return;
+}
+
 int main() {
   test_search();
   test_insert();
   test_split();
   test_btree_insert();
+  test_btree_it();
   return 0;
 }
