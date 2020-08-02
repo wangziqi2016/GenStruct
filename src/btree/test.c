@@ -4,8 +4,14 @@
 void test_search() {
   TEST_BEGIN();
   btree_node_t *node = btree_node_init(BTREE_NODE_LEAF);
-  assert(node->type == BTREE_NODE_LEAF);
+  assert(node->type == BTREE_NODE_LEAF && node->count == 0);
   rand_init();
+  // First test empty node search
+  for(int i = 0;i < 1000;i++) {
+    int index;
+    int found = btree_node_search_u64(node, (void *)rand_u64(), &index, NULL);
+    assert(found == 0 && index == 0);
+  }
   for(int i = 0;i < BTREE_LEAF_CAPACITY;i++) {
     node->kv[i].key = node->kv[i].value = (void *)rand_u64();
   }
