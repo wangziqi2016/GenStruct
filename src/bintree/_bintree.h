@@ -16,17 +16,11 @@
 #define BINTREE_KEY_EQ(x, y) ((uint64_t)x == (uint64_t)y)
 #endif
 
-// Whether iterator is enabled
-#define BINTREE_ENABLE_IT
-
 typedef struct bintree_node_struct_t {
   void *key;
   void *value;
   struct bintree_node_struct_t *left;
   struct bintree_node_struct_t *right;
-  #ifdef BINTREE_ENABLE_IT
-  struct bintree_node_struct_t *parent;
-  #endif
 } bintree_node_t;
 
 typedef struct {
@@ -46,10 +40,5 @@ int bintree_search(bintree_t *bintree, void *key, void **value);
 // Optionally return the removed value in the last argument; ignored if it is set to NULL 
 int bintree_remove(bintree_t *bintree, void *key, void **value);
 
-#ifdef BINTREE_ENABLE_IT
-typedef struct {
-  
-} bintree_it_t;
-#endif
 
 #endif
