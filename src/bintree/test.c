@@ -92,8 +92,8 @@ typedef struct {
   int mode;
 } test_traverse_arg_t;
 
-static test_traverse_cb(bintree_node_t *node, void *_arg) {
-  test_traverse_arg_t *arg = (test_traverse_arg_t *)arg;
+static void test_traverse_cb(bintree_node_t *node, void *_arg) {
+  test_traverse_arg_t *arg = (test_traverse_arg_t *)_arg;
   // Check global key ordering for in-order traversal
   if(arg->mode == BINTREE_TRAVERSE_INORDER && arg->count != 0) {
     assert(arg->prev_key < (uint64_t)node->key);
@@ -106,9 +106,24 @@ static test_traverse_cb(bintree_node_t *node, void *_arg) {
   return;
 }
 
+
+
 void test_traverse() {
   TEST_BEGIN();
-
+  int iter = 1000000;
+  uint64_t *array = NULL;
+  bintree_t *bintree = bintree_populate(iter, &array);
+  qsort(array, iter, sizeof(uint64_t), qsort_cb);
+  test_traverse_arg_t arg;
+  memset(&arg, 0x00, sizeof(test_traverse_arg_t));
+  bintree_traverse(bintree, test_traverse_cb, BINTREE_TRAVERSE_PREORDER, &arg);
+  assert(arg.count == iter);
+  memset(&arg, 0x00, sizeof(test_traverse_arg_t));
+  bintree_traverse(bintree, test_traverse_cb, BINTREE_TRAVERSE_INORDER, &arg);
+  assert(arg.count == iter);
+  memset(&arg, 0x00, sizeof(test_traverse_arg_t));
+  bintree_traverse(bintree, test_traverse_cb, BINTREE_TRAVERSE_POSTORDER, &arg);
+  assert(arg.count == iter);
   TEST_PASS();
   return;
 }
