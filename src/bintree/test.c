@@ -92,7 +92,19 @@ typedef struct {
   int mode;
 } test_traverse_arg_t;
 
-
+static test_traverse_cb(bintree_node_t *node, void *_arg) {
+  test_traverse_arg_t *arg = (test_traverse_arg_t *)arg;
+  // Check global key ordering for in-order traversal
+  if(arg->mode == BINTREE_TRAVERSE_INORDER && arg->count != 0) {
+    assert(arg->prev_key < (uint64_t)node->key);
+  }
+  // Check ordering of keys for single element
+  if(node->left != NULL) assert((uint64_t)node->left->key < (uint64_t)node->key);
+  if(node->right != NULL) assert((uint64_t)node->right->key > (uint64_t)node->key);
+  arg->prev_key = (uint64_t)node->key;
+  arg->count++;
+  return;
+}
 
 void test_traverse() {
   TEST_BEGIN();
