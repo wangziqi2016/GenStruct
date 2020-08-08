@@ -48,7 +48,28 @@ void test_remove() {
   return;
 }
 
-
+// Remove keys in the array randomly
+void test_random_remove() {
+  TEST_BEGIN();
+  int iter = 1000000;
+  uint64_t *array = NULL;
+  bintree_t *bintree = bintree_populate(iter, &array);
+  // We reshuffle random array
+  for(int i = 0;i < iter;i++) {
+    int index = rand() % iter;
+    uint64_t t = array[index];
+    array[index] = array[i];
+    array[i] = t;
+  }
+  for(int i = 0;i < iter;i++) {
+    uint64_t key = array[i];
+    void *value;
+    int ret = bintree_remove(bintree, (void *)key, &value);
+    assert(ret == 1 && (uint64_t)value == key * 2 + 1);
+  }
+  TEST_PASS();
+  return;
+}
 
 int main() {
   test_insert();
