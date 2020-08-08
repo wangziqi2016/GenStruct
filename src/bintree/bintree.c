@@ -118,7 +118,9 @@ int bintree_remove(bintree_t *bintree, void *key, void **value) {
       // Leaf node is removed directly
       assert(node->left == NULL && node->right == NULL);
       bintree_node_free(node);
-      *parent_link = NULL;
+      // If removing the root node, then set root to NULL
+      if(parent_link == NULL) bintree->root = NULL;
+      else *parent_link = NULL;
       break;
     }
     // Swap nodes
