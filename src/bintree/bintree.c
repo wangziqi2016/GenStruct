@@ -30,3 +30,32 @@ void bintree_free(bintree_t *bintree) {
   free(bintree);
   return;
 }
+
+int bintree_insert(bintree_t *bintree, void *key, void *value) {
+  if(bintree->root == NULL) {
+    bintree->root = bintree_node_init();
+    bintree->root->key = key;
+    bintree->root->value = value;
+  } else {
+    bintree_node_t *node = bintree->root;
+    while(1) {
+      bintree_node_t **next = NULL;
+      if(BINTREE_KEY_EQ(key, node->key)) {
+        return 0;
+      } else if(BINTREE_KEY_LESS(key, node->key)) {
+        next = &node->left;
+      } else {
+        next = &node->right;
+      }
+      if(*next == NULL) {
+        *next = bintree_node_init();
+        (*next)->key = key;
+        (*next)->value = value;
+        break;
+      } else {
+        node = *next;
+      }
+    }
+  }
+  return 1;
+}
