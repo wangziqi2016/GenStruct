@@ -2,6 +2,8 @@
 #ifndef _BINTREE_H
 #define _BINTREE_H
 
+#include "common.h"
+
 // The following must be overridden if the default key comparison function is not
 // built-in comparison operation
 #ifndef BINTREE_KEY_LESS
