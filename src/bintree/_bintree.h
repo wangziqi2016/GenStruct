@@ -35,5 +35,6 @@ void bintree_free(bintree_t *bintree);
 
 // Returns 1 if insert succeeds; 0 if fails
 int bintree_insert(bintree_t *bintree, void *key, void *value);
+int bintree_search(bintree_t *bintree, void *key, void **value);
 
 #endif
