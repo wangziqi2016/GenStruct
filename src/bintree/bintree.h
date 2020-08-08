@@ -12,11 +12,18 @@
 #define BINTREE_KEY_EQ(x, y) ((uint64_t)x == (uint64_t)y)
 #else 
 
-typedef struct bintree_struct_t {
+typedef struct bintree_node_struct_t {
   void *key;
   void *value;
-  struct bintree_struct_t *left;
-  struct bintree_struct_t *right;
+  struct bintree_node_struct_t *left;
+  struct bintree_node_struct_t *right;
+} bintree_node_t;
+
+typedef struct {
+  bintree_node_t *root;
 } bintree_t;
+
+bintree_node_t *bintree_node_init();
+void bintree_node_free(bintree_node_t *node); // This function recursively frees all child nodes below
 
 #endif
