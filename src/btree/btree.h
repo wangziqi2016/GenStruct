@@ -56,6 +56,8 @@ btree_node_t *btree_traverse(btree_t *btree, void *key);
 int btree_insert(btree_t *btree, void *key, void *value);
 int btree_search(btree_t *btree, void *key, void **value);
 
+// Read-only iterator interface
+
 typedef struct {
   btree_t *btree;
   btree_node_t *curr; // Current leaf node
