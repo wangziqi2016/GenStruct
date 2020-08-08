@@ -40,5 +40,8 @@ int bintree_search(bintree_t *bintree, void *key, void **value);
 // Optionally return the removed value in the last argument; ignored if it is set to NULL 
 int bintree_remove(bintree_t *bintree, void *key, void **value);
 
+// Iterator interface
+typedef (*bintree_traverse_cb_t)(bintree_node_t *node, void *arg);
+void bintree_traverse(bintree_t *bintree, , int mode, void *arg);
 
 #endif
