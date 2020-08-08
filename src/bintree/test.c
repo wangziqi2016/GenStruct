@@ -22,7 +22,16 @@ void test_insert() {
   TEST_BEGIN();
   int iter = 1000000;
   uint64_t *array = NULL;
+  struct timespec begin_time;
+  clock_gettime(CLOCK_MONOTONIC, &begin_time);
   bintree_t *bintree = bintree_populate(iter, &array);
+  struct timespec end_time;
+  clock_gettime(CLOCK_MONOTONIC, &end_time);
+  uint64_t delta_sec = end_time.tv_sec - begin_time.tv_sec;
+  uint64_t delta_nsec = end_time.tv_nsec - begin_time.tv_nsec;
+  uint64_t nsec = delta_sec * 1000000000UL + delta_nsec;
+  printf("Time = %lu ns\n", nsec);
+  printf("Insert throughput = %lf Mop/sec\n", (iter / 1000000.0f) / (nsec / 1000000000.0f));
   for(int i = 0;i < iter;i++) {
     uint64_t key = array[i];
     void *value;
@@ -44,6 +53,7 @@ void test_remove() {
     int ret = bintree_remove(bintree, (void *)key, &value);
     assert(ret == 1 && (uint64_t)value == key * 2 + 1);
   }
+  assert(bintree->root == NULL);
   TEST_PASS();
   return;
 }
@@ -67,6 +77,7 @@ void test_random_remove() {
     int ret = bintree_remove(bintree, (void *)key, &value);
     assert(ret == 1 && (uint64_t)value == key * 2 + 1);
   }
+  assert(bintree->root == NULL);
   TEST_PASS();
   return;
 }
