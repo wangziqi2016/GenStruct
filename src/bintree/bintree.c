@@ -74,3 +74,53 @@ int bintree_search(bintree_t *bintree, void *key, void **value) {
   }
   return 0;
 }
+
+int bintree_remove(bintree_t *bintree, void *key, void **value) {
+  bintree_node_t *node = bintree->root;
+  bintree_node_t **parent_link = NULL;
+  while(node != NULL) {
+    if(BINTREE_KEY_EQ(key, node->key)) {
+      // Optionally return the value
+      if(value != NULL) *value = node->value;
+      break;
+    } else if(BINTREE_KEY_LESS(key, node->key)) {
+      parent_link = &node->left;
+      node = node->left;
+    } else {
+      parent_link = &node->right;
+      node = node->right;
+    }
+  }
+  if(node == NULL) return 0;
+  bintree_node_t *const removed = node;
+  // After this point, parent_link points to NULL or the node parent's link to the node
+  // "removed" points to the node found in the previous step
+  while(1) {
+    if(node->left != NULL) {
+      // Select the biggest node is the left subtree, i.e. go right in the left subtree until NULL
+      parent_link = &node->left;
+      node = node->left;
+      while(node->right != NULL) {
+        parent_link = &node->right;
+        node = node->right;
+      }
+    } else if(node->right != NULL) {
+      assert(node->left == NULL);
+      parent_link = &node->right;
+      node = node->right;
+      while(node->left != NULL) {
+        parent_link = &node->left;
+        node = node->left;
+      }
+    } else {
+      // Leaf node is removed directly
+      assert(node->left == NULL && node->right == NULL);
+      bintree_node_free(node);
+      *parent_link = NULL;
+      break;
+    }
+    removed->key = node->key;
+    removed->value = node->value;
+  }
+  return 1;
+}
