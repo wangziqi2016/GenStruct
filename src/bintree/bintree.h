@@ -12,6 +12,11 @@
 #define BINTREE_KEY_EQ(x, y) ((uint64_t)x == (uint64_t)y)
 #else 
 
-
+typedef struct bintree_struct_t {
+  void *key;
+  void *value;
+  struct bintree_struct_t *left;
+  struct bintree_struct_t *right;
+} bintree_t;
 
 #endif
