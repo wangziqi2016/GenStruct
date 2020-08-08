@@ -85,9 +85,26 @@ void test_random_remove() {
   return;
 }
 
+typedef struct {
+  int count;
+  int first_key;
+  uint64_t prev_key;
+  int mode;
+} test_traverse_arg_t;
+
+
+
+void test_traverse() {
+  TEST_BEGIN();
+
+  TEST_PASS();
+  return;
+}
+
 int main() {
   test_insert();
   test_remove();
   test_random_remove();
+  test_traverse();
   return 0;
 }
