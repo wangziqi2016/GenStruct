@@ -38,6 +38,7 @@ void test_insert() {
     int ret = bintree_search(bintree, (void *)key, &value);
     assert(ret == 1 && (uint64_t)value == key * 2 + 1);
   }
+  bintree_free(bintree);
   TEST_PASS();
   return;
 }
@@ -54,6 +55,7 @@ void test_remove() {
     assert(ret == 1 && (uint64_t)value == key * 2 + 1);
   }
   assert(bintree->root == NULL);
+  bintree_free(bintree);
   TEST_PASS();
   return;
 }
@@ -78,6 +80,7 @@ void test_random_remove() {
     assert(ret == 1 && (uint64_t)value == key * 2 + 1);
   }
   assert(bintree->root == NULL);
+  bintree_free(bintree);
   TEST_PASS();
   return;
 }
