@@ -17,3 +17,16 @@ void bintree_node_free(bintree_node_t *node) {
   free(node);
   return;
 }
+
+bintree_t *bintree_init() {
+  bintree_t *bintree = (bintree_t *)malloc(sizeof(bintree_t));
+  SYSEXPECT(bintree != NULL);
+  memset(bintree, 0x00, sizeof(bintree_t));
+  return bintree;
+}
+
+void bintree_free(bintree_t *bintree) {
+  if(bintree->root != NULL) bintree_node_free(bintree->root);
+  free(bintree);
+  return;
+}

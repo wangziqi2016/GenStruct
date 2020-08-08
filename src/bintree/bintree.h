@@ -28,4 +28,7 @@ typedef struct {
 bintree_node_t *bintree_node_init();
 void bintree_node_free(bintree_node_t *node); // This function recursively frees all child nodes below
 
+bintree_t *bintree_init();
+void bintree_free(bintree_t *bintree);
+
 #endif
