@@ -129,3 +129,19 @@ int bintree_remove(bintree_t *bintree, void *key, void **value) {
   }
   return 1;
 }
+
+// This is the recursion body
+static void _bintree_traverse(bintree_node_t *node, bintree_traverse_cb_t cb, int mode, void *arg) {
+  if(node == NULL) return;
+  if(mode == BINTREE_TRAVERSE_PREORDER) cb(node, arg);
+  _bintree_traverse(node->left);
+  if(mode == BINTREE_TRAVERSE_INORDER) cb(node, arg);
+  _bintree_traverse(node->right);
+  if(mode == BINTREE_TRAVERSE_POSTORDER) cb(node, arg);
+  return;
+}
+
+void bintree_traverse(bintree_t *bintree, bintree_traverse_cb_t cb, int mode, void *arg) {
+  _bintree_traverse(bintree->root, cb, mode, arg);
+  return;
+}
