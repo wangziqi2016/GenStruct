@@ -134,14 +134,17 @@ int bintree_remove(bintree_t *bintree, void *key, void **value) {
 static void _bintree_traverse(bintree_node_t *node, bintree_traverse_cb_t cb, int mode, void *arg) {
   if(node == NULL) return;
   if(mode == BINTREE_TRAVERSE_PREORDER) cb(node, arg);
-  _bintree_traverse(node->left);
+  _bintree_traverse(node->left, cb, mode, arg);
   if(mode == BINTREE_TRAVERSE_INORDER) cb(node, arg);
-  _bintree_traverse(node->right);
+  _bintree_traverse(node->right, cb, mode, arg);
   if(mode == BINTREE_TRAVERSE_POSTORDER) cb(node, arg);
   return;
 }
 
 void bintree_traverse(bintree_t *bintree, bintree_traverse_cb_t cb, int mode, void *arg) {
+  if(mode != BINTREE_TRAVERSE_PREORDER && mode != BINTREE_TRAVERSE_INORDER && mode != BINTREE_TRAVERSE_POSTORDER) {
+    error_exit("Invalid traversal mode: %d\n", mode);
+  }
   _bintree_traverse(bintree->root, cb, mode, arg);
   return;
 }
