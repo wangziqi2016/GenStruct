@@ -41,7 +41,13 @@ int bintree_search(bintree_t *bintree, void *key, void **value);
 int bintree_remove(bintree_t *bintree, void *key, void **value);
 
 // Iterator interface
+
+#define BINTREE_TRAVERSE_PREORDER  0
+#define BINTREE_TRAVERSE_INORDER   1
+#define BINTREE_TRAVERSE_POSTORDER 2
+
 typedef (*bintree_traverse_cb_t)(bintree_node_t *node, void *arg);
-void bintree_traverse(bintree_t *bintree, , int mode, void *arg);
+// Tree traversal in one of the three modes defined above
+void bintree_traverse(bintree_t *bintree, bintree_traverse_cb_t cb, int mode, void *arg);
 
 #endif
