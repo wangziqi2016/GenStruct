@@ -163,7 +163,16 @@ void test_btree_insert() {
   const int iter = 1000000;
   uint64_t *keys = malloc(iter * sizeof(uint64_t));
   SYSEXPECT(keys != NULL);
+  struct timespec begin_time;
+  clock_gettime(CLOCK_MONOTONIC, &begin_time);
   btree_t *btree = populate_tree(iter, keys);
+  struct timespec end_time;
+  clock_gettime(CLOCK_MONOTONIC, &end_time);
+  uint64_t delta_sec = end_time.tv_sec - begin_time.tv_sec;
+  uint64_t delta_nsec = end_time.tv_nsec - begin_time.tv_nsec;
+  uint64_t nsec = delta_sec * 1000000000UL + delta_nsec;
+  printf("Time = %lu ns\n", nsec);
+  printf("Insert throughput = %lf Mop/sec\n", (iter / 1000000.0f) / (nsec / 1000000000.0f));
   for(int i = 0;i < iter;i++) {
     uint64_t value;
     int found = btree_search(btree, (void *)keys[i], (void **)&value);
