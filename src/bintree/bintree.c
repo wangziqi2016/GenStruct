@@ -92,10 +92,12 @@ int bintree_remove(bintree_t *bintree, void *key, void **value) {
     }
   }
   if(node == NULL) return 0;
-  bintree_node_t *const removed = node;
+  
   // After this point, parent_link points to NULL or the node parent's link to the node
-  // "removed" points to the node found in the previous step
+  // We next swap the "removed" node with nodes below it such that binary property is not violated, while
+  // the node to be deleted moves down the tree and finally reach leaf level
   while(1) {
+    bintree_node_t *removed = node;
     if(node->left != NULL) {
       // Select the biggest node is the left subtree, i.e. go right in the left subtree until NULL
       parent_link = &node->left;
@@ -119,6 +121,7 @@ int bintree_remove(bintree_t *bintree, void *key, void **value) {
       *parent_link = NULL;
       break;
     }
+    // Swap nodes
     removed->key = node->key;
     removed->value = node->value;
   }
