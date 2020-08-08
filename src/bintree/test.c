@@ -106,7 +106,13 @@ static void test_traverse_cb(bintree_node_t *node, void *_arg) {
   return;
 }
 
-
+static int qsort_cb(void *x, void *y) {
+  uint64_t xx = *(uint64_t *)x;
+  uint64_t yy = *(uint64_t *)y;
+  if(xx == yy) return 0;
+  if(xx < yy) return -1;
+  return 1;
+}
 
 void test_traverse() {
   TEST_BEGIN();
