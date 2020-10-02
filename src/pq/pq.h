@@ -11,6 +11,11 @@
 // Returns 1 if a < b; 0 otherwise
 typedef int (*pq_less_cb_t)(void *a, void *b);
 
-
+typedef struct {
+  void **data;             // An array that might be reallocated
+  int size;                // Current number of elements in the array
+  int capacity;            // Maximim number of elements in the array
+  pq_less_cb_t less_cb;    // Element comparison function
+} pq_t;
 
 #endif
