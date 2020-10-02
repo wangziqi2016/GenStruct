@@ -25,5 +25,6 @@ void pq_free_all(pq_t *pq, void (*data_free)(void *)); // Also free elements
 
 inline static int pq_lchild_index(pq_t *pq, int index) { return index * 2 + 1; (void)pq; }
 inline static int pq_rchild_index(pq_t *pq, int index) { return index * 2 + 2; (void)pq; }
+inline static int pq_parent_index(pq_t *pq, int index) { return (index - 1) / 2; (void)pq; }
 
 #endif
