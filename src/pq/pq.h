@@ -18,4 +18,8 @@ typedef struct {
   int capacity;            // Maximim number of elements in the array
 } pq_t;
 
+pq_t *pq_init_size(int size);
+pq_t *pq_init();
+void pq_free(pq_t *pq);
+
 #endif
