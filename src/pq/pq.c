@@ -12,5 +12,12 @@ pq_t *pq_init_size(int size) {
   return pq;
 }
 
-pq_t *pq_init();
-void pq_free(pq_t *pq);
+pq_t *pq_init() {
+  return pq_init_size(PQ_INIT_SIZE);
+}
+
+void pq_free(pq_t *pq) {
+  free(pq->data);
+  free(pq);
+  return;
+}
