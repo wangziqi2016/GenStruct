@@ -27,4 +27,8 @@ inline static int pq_lchild_index(pq_t *pq, int index) { return index * 2 + 1; (
 inline static int pq_rchild_index(pq_t *pq, int index) { return index * 2 + 2; (void)pq; }
 inline static int pq_parent_index(pq_t *pq, int index) { return (index - 1) / 2; (void)pq; }
 
+inline static void *pq_lchild(pq_t *pq, int index) { return pq->data[pq_lchild_index(pq, index)]; }
+inline static void *pq_rchild(pq_t *pq, int index) { return pq->data[pq_rchild_index(pq, index)]; }
+inline static void *pq_parent(pq_t *pq, int index) { return pq->data[pq_parent_index(pq, index)]; }
+
 #endif
