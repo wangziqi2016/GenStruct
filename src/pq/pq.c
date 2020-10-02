@@ -21,3 +21,11 @@ void pq_free(pq_t *pq) {
   free(pq);
   return;
 }
+
+void pq_free_all(pq_t *pq, void (*data_free)(void *)) {
+  for(int i = 0;i < pq->size;i++) {
+    data_free(pq->data[i]);
+  }
+  pq_free(pq);
+  return;
+}

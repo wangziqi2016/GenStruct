@@ -21,5 +21,6 @@ typedef struct {
 pq_t *pq_init_size(int size);
 pq_t *pq_init();
 void pq_free(pq_t *pq);
+void pq_free_all(pq_t *pq, void (*data_free)(void *)); // Also free elements
 
 #endif
