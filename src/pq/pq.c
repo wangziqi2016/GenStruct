@@ -60,7 +60,7 @@ void pq_down(pq_t *pq, int index) {
     int less_child_index = pq_lchild_index(pq, index);
     if(pq_has_rchild(pq, index) == 1) {
       if(pq->less_cb(pq_rchild(pq, index), pq_lchild(pq, index))) {
-        less_child_index = pq_rchild_index(index);
+        less_child_index = pq_rchild_index(pq, index);
       }
     }
     if(pq->less_cb(pq->data[less_child_index], curr)) {
