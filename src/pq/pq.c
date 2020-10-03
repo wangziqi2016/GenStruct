@@ -90,7 +90,7 @@ void pq_realloc(pq_t *pq, int new_size) {
 }
 
 // Insert an element at the end and pq_up
-void pq_insert(pq_t *pq, void *entry) {
+void pq_push(pq_t *pq, void *entry) {
   assert(pq->size >= 0 && pq->size <= pq->capacity);
   if(pq->size == pq->capacity) {
     pq_realloc(pq, pq->capacity * 2);
@@ -102,4 +102,20 @@ void pq_insert(pq_t *pq, void *entry) {
   pq->size++;
   pq_up(pq, index);
   return;
+}
+
+void *pq_pop(pq_t *pq) {
+  // Special case: empty queue and single element queue, both do not reorganization
+  if(pq->size == 0) return NULL;
+  else if(pq->size == 1) {
+    pq->size = 0;
+    return pq->data[0];
+  }
+  void *ret = pq->data[0];
+  // One element was removed; This var now points to the last element in the array
+  pq->size--;
+  // Move the last element to the root, and percolate down
+  pq_swap(pq, pq->size, 0);
+  pq_down(pq, 0);
+  return ret;
 }
