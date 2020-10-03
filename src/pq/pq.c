@@ -2,18 +2,19 @@
 #include "common.h"
 #include "pq.h"
 
-pq_t *pq_init_size(int size) {
+pq_t *pq_init_size(pq_less_cb_t less_cb, int size) {
   pq_t *pq = (pq_t *)malloc(sizeof(pq_t));
   SYSEXPECT(pq != NULL);
   memset(pq, 0x00, sizeof(pq_t));
   pq->data = (void **)malloc(sizeof(void *) * size);
+  pq->less_cb = less_cb;
   SYSEXPECT(pq->data != NULL);
   memset(pq->data, 0x00, sizeof(void *) * size);
   return pq;
 }
 
-pq_t *pq_init() {
-  return pq_init_size(PQ_INIT_SIZE);
+pq_t *pq_init(pq_less_cb_t less_cb) {
+  return pq_init_size(less_cb, PQ_INIT_SIZE);
 }
 
 void pq_free(pq_t *pq) {
@@ -38,7 +39,7 @@ void pq_up(pq_t *pq, int index) {
   }
   // This value does not change since we always use the same element for comparison
   void *const curr = pq->data[index];
-  while(pq_less_cb(curr, pq_parent(pq, index))) {
+  while(pq->less_cb(curr, pq_parent(pq, index))) {
     int parent_index = pq_parent_index(pq, index);
     pq_swap(pq, index, parent_index);
     index = parent_index;

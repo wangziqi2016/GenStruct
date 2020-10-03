@@ -11,7 +11,7 @@
 // Less than function for comparing elements in the queue; void * are general pointers pointing to the element
 // Returns non-zero if a < b; 0 otherwise
 // Users should define their own pq_less_cb either in the header or in the source
-int (*pq_less_cb_t)(void *a, void *b);
+typedef int (*pq_less_cb_t)(void *a, void *b);
 
 typedef struct {
   void **data;             // An array that might be reallocated
@@ -20,8 +20,8 @@ typedef struct {
   pq_less_cb_t less_cb;    // Call back function
 } pq_t;
 
-pq_t *pq_init_size(int size);
-pq_t *pq_init();
+pq_t *pq_init_size(pq_less_cb_t less_cb, int size);
+pq_t *pq_init(pq_less_cb_t less_cb);
 void pq_free(pq_t *pq);
 void pq_free_all(pq_t *pq, void (*data_free)(void *)); // Also free elements
 
