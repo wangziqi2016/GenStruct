@@ -65,6 +65,8 @@ typedef struct {
   int curr_index;
 } pq_iter_t;
 
-
+inline static pq_iter_t pq_begin(pq_t *pq) { pq_iter_t it = {pq, 0}; return it; }
+inline static int pq_is_end(pq_iter_t *it) { return it->curr_index >= it->pq->size; }
+inline static void pq_next(pq_iter_t *it) { it->curr_index++; }
 
 #endif
