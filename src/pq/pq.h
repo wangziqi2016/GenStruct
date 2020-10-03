@@ -6,6 +6,7 @@
 
 // Initially allocate 128-element array
 #define PQ_INIT_SIZE       128
+#define PQ_ROOT_INDEX      0
 
 // Less than function for comparing elements in the queue; void * are general pointers pointing to the element
 // Returns 1 if a < b; 0 otherwise
@@ -30,5 +31,16 @@ inline static int pq_parent_index(pq_t *pq, int index) { return (index - 1) / 2;
 inline static void *pq_lchild(pq_t *pq, int index) { return pq->data[pq_lchild_index(pq, index)]; }
 inline static void *pq_rchild(pq_t *pq, int index) { return pq->data[pq_rchild_index(pq, index)]; }
 inline static void *pq_parent(pq_t *pq, int index) { return pq->data[pq_parent_index(pq, index)]; }
+
+inline static void pq_swap(pq_t *pq, int index1, int index2) { 
+  void *t = pq->data[index1];
+  pq->data[index1] = pq->data[index2];
+  pq->data[index2] = t;
+  return;
+}
+
+// Percolate up, compare with parent and swap if necessary, repeat until parent larger or at root
+void pq_float_up(pq_t *pq, int index);
+
 
 #endif
