@@ -47,4 +47,21 @@ void pq_up(pq_t *pq, int index) {
   return;
 }
 
-void pq_down(pq_t *pq, int index);
+// Move the element down by comparing it with one or two child, or stop if there is none
+void pq_down(pq_t *pq, int index) {
+  assert(index >= 0 && index < pq->size);
+  void *const curr = pq->data[index];
+  while(1) {
+    // Terminating condition: When it is at the last level
+    if(pq_has_child(pq, index) == 0) {
+      break;
+    }
+    // If there is right child then pick the smaller one; Otherwise only pick left child
+    int less_child_index = pq_lchild_index(pq, index);
+    if(pq_has_rchild(pq, index) == 1) {
+      if(pq->less_cb(pq_rchild(pq, index), pq_lchild(pq, index))) {
+        int 
+      }
+    }
+  }
+}

@@ -33,6 +33,7 @@ inline static void *pq_lchild(pq_t *pq, int index) { return pq->data[pq_lchild_i
 inline static void *pq_rchild(pq_t *pq, int index) { return pq->data[pq_rchild_index(pq, index)]; }
 inline static void *pq_parent(pq_t *pq, int index) { return pq->data[pq_parent_index(pq, index)]; }
 
+// Note that the following two are not symmetric since if rchild is present, lchild must also be
 inline static int pq_has_child(pq_t *pq, int index) { return pq_lchild_index(pq, index) >= pq->size; }
 inline static int pq_has_rchild(pq_t *pq, int index) { return pq_rchild_index(pq, index) >= pq->size; }
 
