@@ -55,6 +55,9 @@ void pq_down(pq_t *pq, int index);
 // New size can be anything, but the result is guaranteed to be no smaller than new_size
 void pq_realloc(pq_t *pq, int new_size);
 
-void pq_insert(pq_t *pq, void *entry);
+void pq_push(pq_t *pq, void *entry);
+void *pq_pop(pq_t *pq);
+// Peeks the minimum element
+inline static void *pq_top(pq_t *pq) { return pq->size == 0 ? NULL : pq->data[0]; }
 
 #endif
