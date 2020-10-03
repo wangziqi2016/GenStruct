@@ -52,6 +52,7 @@ static int int_less_cb(const void *a, const void *b) {
 }
 
 static void sort_array(int *array, int length) {
+  // Base, num elem, size elem, comparator
   qsort(array, length, sizeof(int), int_less_cb);
   return;
 }
@@ -82,15 +83,20 @@ void test_pq_pop() {
   int *array = NULL;
   // This inserts into the pq
   pq_t *pq = build_pq(test_size, init_size, &array);
-  // Keys are ordered from min to max but always positive
-  int prev_key = -1;
+  sort_array(array, test_size);
+  // Iteration count - should give sorted array elements matching the sorted array
+  int index = 0;
   while(1) {
     pq_test_node_t *node = pq_pop(pq);
-    assert(node->key == array[node->index]);
+    if(node == NULL) break;
     assert(node->value == node->key * 2 + 1);
-    array[node->index] = -1; // Destroy the value for check
-    assert(node->key > prev_key);
+    assert(node->key == array[index]);
+    pq_test_node_free(node);
+    index++;
   }
+  // All elements are poped
+  assert(index == test_size);
+  assert(pq_get_size(pq) == 0);
   pq_free_all(pq, pq_test_node_free);
   TEST_PASS();
   return;
@@ -100,6 +106,7 @@ void test_pq_pop() {
 int main() {
   printf("========== pq ==========\n");
   test_pq_push();
+  test_pq_pop();
   printf("========================\n");
   return 0;
 }

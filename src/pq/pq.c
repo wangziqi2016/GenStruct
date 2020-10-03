@@ -82,6 +82,9 @@ void pq_realloc(pq_t *pq, int new_size) {
   if(new_size <= pq->capacity) return;
   void **new_data = (void **)malloc(sizeof(void *) * new_size);
   SYSEXPECT(new_data != NULL);
+#ifndef NDEBUG
+  memset(new_data, 0x00, sizeof(void *) * new_size);
+#endif
   void **old_data = pq->data;
   memcpy(new_data, old_data, sizeof(void *) * pq->size);
   pq->data = new_data;
@@ -117,6 +120,9 @@ void *pq_pop(pq_t *pq) {
   pq->size--;
   // Move the last element to the root, and percolate down
   pq_swap(pq, pq->size, 0);
+#ifndef NDEBUG
+  pq->data[pq->size] = NULL;
+#endif
   pq_down(pq, 0);
   return ret;
 }
