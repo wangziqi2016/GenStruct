@@ -26,9 +26,28 @@ static int pq_test_node_less_cb(void *a, void *b) {
   return a->key < b->key;
 }
 
+static pq_t *build_pq(int test_size, int init_size, int **array) {
+  pq_t *pq = pq_init_size(pq_test_node_less_cb, init_size);
+  int index = 0;
+  *array = (int *)malloc(sizeof(int) * test_size);
+  SYSEXPECT(*array != NULL);
+  srand(time(NULL));
+  for(int i = 0;i < test_size;i++) {
+    int key = rand();
+    // Add key to the array
+    (*array)[index++] = key;
+    // Push the node into the pq
+    pq_test_node_t *node = pq_test_node_init(key);
+    pq_push(pq, node);
+  }
+  assert(test_size == index);
+  return pq;
+}
+
 void test_pq_push() {
   TEST_BEGIN();
-
+  const int test_size = 1000;
+  const int init_size = 3;
   TEST_PASS();
   return;
 }
