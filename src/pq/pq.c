@@ -74,3 +74,21 @@ void pq_down(pq_t *pq, int index) {
   }
   return;
 }
+
+// This function only guarantees that the after size is no smaller than new size
+void pq_realloc(pq_t *pq, int new_size) {
+  assert(pq->size >= 0 && pq->size <= capacity); // == capacity is fine since we need full state
+  if(new_size <= pq->capacity) return;
+  void **new_data = (void **)malloc(sizeof(void *) * new_size);
+  SYSEXPECT(new_data != NULL);
+  void **old_data = pq->data;
+  memcpy(new_data, old_data, sizeof(void *) * pq->size);
+  pq->data = new_data;
+  free(old_data);
+  return;
+}
+
+// Insert an element at the end and pq_up
+void pq_insert(pq_t *pq, void *entry) {
+
+}

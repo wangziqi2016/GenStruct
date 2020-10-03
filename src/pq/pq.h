@@ -44,10 +44,17 @@ inline static void pq_swap(pq_t *pq, int index1, int index2) {
   return;
 }
 
+// Two primitives for essentially everything
+
 // Percolate up, compare with parent and swap if necessary, repeat until parent larger or at root
 void pq_up(pq_t *pq, int index);
 // Percolate down
 void pq_down(pq_t *pq, int index);
 
+// Realloc the array to the new size; 
+// New size can be anything, but the result is guaranteed to be no smaller than new_size
+void pq_realloc(pq_t *pq, int new_size);
+
+void pq_insert(pq_t *pq, void *entry);
 
 #endif
