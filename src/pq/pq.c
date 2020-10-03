@@ -31,7 +31,7 @@ void pq_free_all(pq_t *pq, void (*data_free)(void *)) {
 }
 
 // Move the current index element up the heap until it is at root level or the parent is no larger
-void pq_float_up(pq_t *pq, int index) {
+void pq_up(pq_t *pq, int index) {
   assert(index >= 0 && index < pq->size);
   if(index == PQ_ROOT_INDEX) {
     return;
@@ -39,9 +39,11 @@ void pq_float_up(pq_t *pq, int index) {
   // This value does not change since we always use the same element for comparison
   void *const curr = pq->data[index];
   while(pq_less_cb(curr, pq_parent(pq, index))) {
-    int parent_index = pq_parent_index(index);
-    pq_swap(index, parent_index);
+    int parent_index = pq_parent_index(pq, index);
+    pq_swap(pq, index, parent_index);
     index = parent_index;
   }
   return;
 }
+
+void pq_down(pq_t *pq, int index);
