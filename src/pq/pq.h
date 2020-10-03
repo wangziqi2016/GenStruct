@@ -34,8 +34,8 @@ inline static void *pq_rchild(pq_t *pq, int index) { return pq->data[pq_rchild_i
 inline static void *pq_parent(pq_t *pq, int index) { return pq->data[pq_parent_index(pq, index)]; }
 
 // Note that the following two are not symmetric since if rchild is present, lchild must also be
-inline static int pq_has_child(pq_t *pq, int index) { return pq_lchild_index(pq, index) >= pq->size; }
-inline static int pq_has_rchild(pq_t *pq, int index) { return pq_rchild_index(pq, index) >= pq->size; }
+inline static int pq_has_child(pq_t *pq, int index) { return pq_lchild_index(pq, index) < pq->size; }
+inline static int pq_has_rchild(pq_t *pq, int index) { return pq_rchild_index(pq, index) < pq->size; }
 
 inline static void pq_swap(pq_t *pq, int index1, int index2) { 
   void *t = pq->data[index1];
@@ -43,6 +43,8 @@ inline static void pq_swap(pq_t *pq, int index1, int index2) {
   pq->data[index2] = t;
   return;
 }
+
+inline static int pq_get_size(pq_t *pq) { return pq->size; }
 
 // Two primitives for essentially everything
 
@@ -65,7 +67,7 @@ typedef struct {
   int curr_index;
 } pq_it_t;
 
-inline static pq_iter_t pq_begin(pq_t *pq) { pq_it_t it = {pq, 0}; return it; }
+inline static pq_it_t pq_begin(pq_t *pq) { pq_it_t it = {pq, 0}; return it; }
 inline static int pq_it_isend(pq_it_t *it) { return it->curr_index >= it->pq->size; }
 inline static void pq_it_next(pq_it_t *it) { it->curr_index++; }
 inline static void *pq_it_data(pq_it_t *it) { return it->pq->data[it->curr_index]; };
