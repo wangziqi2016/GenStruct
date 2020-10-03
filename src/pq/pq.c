@@ -52,7 +52,7 @@ void pq_down(pq_t *pq, int index) {
   assert(index >= 0 && index < pq->size);
   void *const curr = pq->data[index];
   while(1) {
-    // Terminating condition: When it is at the last level
+    // Terminating condition #1: Exit when current element is at the last level
     if(pq_has_child(pq, index) == 0) {
       break;
     }
@@ -60,8 +60,17 @@ void pq_down(pq_t *pq, int index) {
     int less_child_index = pq_lchild_index(pq, index);
     if(pq_has_rchild(pq, index) == 1) {
       if(pq->less_cb(pq_rchild(pq, index), pq_lchild(pq, index))) {
-        int 
+        less_child_index = pq_rchild_index(index);
       }
     }
+    if(pq->less_cb(pq->data[less_child_index], curr)) {
+      pq_swap(pq, index, less_child_index);
+    } else {
+      // Terminate condition #2: Exit loop when both elements are larger
+      break;
+    }
+    // This is the current index of the element under consideration
+    index = less_child_index;
   }
+  return;
 }
