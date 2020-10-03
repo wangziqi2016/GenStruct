@@ -63,10 +63,11 @@ inline static void *pq_top(pq_t *pq) { return pq->size == 0 ? NULL : pq->data[0]
 typedef struct {
   pq_t *pq;
   int curr_index;
-} pq_iter_t;
+} pq_it_t;
 
-inline static pq_iter_t pq_begin(pq_t *pq) { pq_iter_t it = {pq, 0}; return it; }
-inline static int pq_is_end(pq_iter_t *it) { return it->curr_index >= it->pq->size; }
-inline static void pq_next(pq_iter_t *it) { it->curr_index++; }
+inline static pq_iter_t pq_begin(pq_t *pq) { pq_it_t it = {pq, 0}; return it; }
+inline static int pq_it_isend(pq_it_t *it) { return it->curr_index >= it->pq->size; }
+inline static void pq_it_next(pq_it_t *it) { it->curr_index++; }
+inline static void *pq_it_data(pq_it_t *it) { return it->pq->data[it->curr_index]; };
 
 #endif

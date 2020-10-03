@@ -4,6 +4,7 @@
 typedef struct {
   int key;
   int value;
+  int index;     // The index of the key in the array
 } pq_test_node_t;
 
 // Note that the value is set to key * 2 + 1
@@ -38,6 +39,8 @@ static pq_t *build_pq(int test_size, int init_size, int **array) {
     (*array)[index++] = key;
     // Push the node into the pq
     pq_test_node_t *node = pq_test_node_init(key);
+    // Note that index has been incremented
+    node->index = index - 1;
     pq_push(pq, node);
   }
   assert(test_size == index);
@@ -51,7 +54,13 @@ void test_pq_push() {
   int *array = NULL;
   // This inserts into the pq
   pq_t *pq = build_pq(test_size, init_size, &array);
-
+  pq_it_t it = pq_begin(pq);
+  while(!pq_it_isend(&it)) {
+    pq_test_node_t *node = pq_it_data(&it);
+    assert(node->key == array[node->index]);
+    assert(node->value == node->key * 2 + 1);
+    pq_it_next(&it);
+  }
   pq_free_all(pq, pq_test_node_free);
   TEST_PASS();
   return;
