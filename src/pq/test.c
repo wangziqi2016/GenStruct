@@ -16,6 +16,15 @@ static node_t *pq_test_node_init(int key) {
   return node;
 }
 
+// This function takes void * argument for the pq_free_all() call back
+static void pq_test_node_free(void *node) {
+  free((pq_test_node_t *)node);
+  return;
+}
+
+static int pq_test_node_less_cb(void *a, void *b) {
+  return a->key < b->key;
+}
 
 void test_pq_push() {
   TEST_BEGIN();
