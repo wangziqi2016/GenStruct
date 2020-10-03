@@ -60,4 +60,11 @@ void *pq_pop(pq_t *pq);
 // Peeks the minimum element
 inline static void *pq_top(pq_t *pq) { return pq->size == 0 ? NULL : pq->data[0]; }
 
+typedef struct {
+  pq_t *pq;
+  int curr_index;
+} pq_iter_t;
+
+
+
 #endif
