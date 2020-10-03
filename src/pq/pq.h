@@ -33,6 +33,9 @@ inline static void *pq_lchild(pq_t *pq, int index) { return pq->data[pq_lchild_i
 inline static void *pq_rchild(pq_t *pq, int index) { return pq->data[pq_rchild_index(pq, index)]; }
 inline static void *pq_parent(pq_t *pq, int index) { return pq->data[pq_parent_index(pq, index)]; }
 
+inline static int pq_has_child(pq_t *pq, int index) { return pq_lchild_index(pq, index) >= pq->size; }
+inline static int pq_has_rchild(pq_t *pq, int index) { return pq_rchild_index(pq, index) >= pq->size; }
+
 inline static void pq_swap(pq_t *pq, int index1, int index2) { 
   void *t = pq->data[index1];
   pq->data[index1] = pq->data[index2];
