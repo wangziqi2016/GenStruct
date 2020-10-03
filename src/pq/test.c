@@ -47,6 +47,15 @@ static pq_t *build_pq(int test_size, int init_size, int **array) {
   return pq;
 }
 
+static int int_less_cb(const void *a, const void *b) {
+   return (*(int*)a - *(int*)b);
+}
+
+static void sort_array(int *array, int length) {
+  qsort(array, length, sizeof(int), int_less_cb);
+  return;
+}
+
 void test_pq_push() {
   TEST_BEGIN();
   const int test_size = 1000;
@@ -60,6 +69,27 @@ void test_pq_push() {
     assert(node->key == array[node->index]);
     assert(node->value == node->key * 2 + 1);
     pq_it_next(&it);
+  }
+  pq_free_all(pq, pq_test_node_free);
+  TEST_PASS();
+  return;
+}
+
+void test_pq_pop() {
+  TEST_BEGIN();
+  const int test_size = 1000;
+  const int init_size = 3;
+  int *array = NULL;
+  // This inserts into the pq
+  pq_t *pq = build_pq(test_size, init_size, &array);
+  // Keys are ordered from min to max but always positive
+  int prev_key = -1;
+  while(1) {
+    pq_test_node_t *node = pq_pop(pq);
+    assert(node->key == array[node->index]);
+    assert(node->value == node->key * 2 + 1);
+    array[node->index] = -1; // Destroy the value for check
+    assert(node->key > prev_key);
   }
   pq_free_all(pq, pq_test_node_free);
   TEST_PASS();
