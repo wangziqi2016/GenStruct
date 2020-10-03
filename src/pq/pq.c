@@ -8,6 +8,7 @@ pq_t *pq_init_size(pq_less_cb_t less_cb, int size) {
   memset(pq, 0x00, sizeof(pq_t));
   pq->data = (void **)malloc(sizeof(void *) * size);
   pq->less_cb = less_cb;
+  pq->capacity = size;
   SYSEXPECT(pq->data != NULL);
   memset(pq->data, 0x00, sizeof(void *) * size);
   return pq;
